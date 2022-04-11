@@ -28,5 +28,7 @@ norm_counts = TRUE.}
 }
 \description{
 Normalize DGE data based on censored mean, which excludes genes highly expressed genes when
-calculating size factors.
+calculating size factors. This code
+was drawn from https://github.com/argschwind/TAPseq_manuscript/blob/master/vignettes/functions/MAST.R
+and only lightly edited.
 }

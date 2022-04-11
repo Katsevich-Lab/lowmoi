@@ -11,7 +11,9 @@ de_MAST(pert_object)
 in colData. The perturbation to be tested is assumed to be the first column in colData!}
 }
 \description{
-Perform differential expression analysis between perturbed and control cells using MAST.
+Perform differential expression analysis between perturbed and control cells using MAST. This code
+was drawn from https://github.com/argschwind/TAPseq_manuscript/blob/master/vignettes/functions/MAST.R
+and only lightly edited.
 }
 \details{
 The first column in colData is expected to provide the perturbation status as a factor with two
