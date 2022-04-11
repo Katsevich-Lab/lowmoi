@@ -1,29 +1,21 @@
 #' Run Schraivogel's MAST.cov method
 #'
-#' @param gene_odm_fp Filepath for gene expression ODM
-#' @param gene_metadata_fp Filepath for gene expression ODM metadata
-#' @param grna_odm_fp Filepath for gRNA expression / indicator ODM
-#' @param grna_metadata_fp Filepath for gRNA expression / indicator ODM metadata
+#' @param gene_odm gene expression ODM
+#' @param grna_odm gRNA expression / indicator ODM
 #' @param gene_gRNA_group_pairs Pairs of genes and gRNA groups to analyze, as in \code{sceptre}
 #' @param gRNA_groups_table A table specifying which gRNAs are in which groups, as in \code{sceptre}.
 #' This argument is optional, and the default assumption is that each gRNA is in its own group.
 #' @param gRNA_threshold A threshold for gRNA expression. This argument is optional, and defaults to 8,
 #' which was Schraivogel et al's choice.
 #'
-#' @return A tibble with three columns: \code{gene_id}, \code{gRNA_group}, \code{p_value}.
+#' @return A tibble with three columns: \code{response_id}, \code{gRNA_group}, \code{p_value}.
 #' The last column is the computed MAST.cov p-value.
 #' @export
-schraivogel_method <- function(gene_odm_fp,
-                               gene_metadata_fp,
-                               grna_odm_fp,
-                               grna_metadata_fp,
+schraivogel_method <- function(gene_odm,
+                               grna_odm,
                                gene_gRNA_group_pairs,
                                gRNA_groups_table = NULL,
                                gRNA_threshold = 8) {
-
-  # read the ODMs for gRNAs and genes
-  grna_odm <- ondisc::read_odm(odm_fp = grna_odm_fp, metadata_fp = grna_metadata_fp)
-  gene_odm <- ondisc::read_odm(odm_fp = gene_odm_fp, metadata_fp = gene_metadata_fp)
 
   # pull the entire gRNA ODM into memory
   grna_data <- grna_odm[[1:nrow(grna_odm),1:ncol(grna_odm)]]
@@ -87,8 +79,8 @@ schraivogel_method <- function(gene_odm_fp,
   ) |>
     # combine the results, extract gene-gRNA group pairs of interest, and format for output
     dplyr::bind_rows() |>
-    dplyr::rename(gene_id = gene, gRNA_group = guide, p_value = p_val) |>
-    dplyr::select(gene_id, gRNA_group, p_value) |>
-    dplyr::semi_join(gene_gRNA_group_pairs, by = c("gene_id", "gRNA_group")) |>
+    dplyr::rename(response_id = gene, gRNA_group = guide, p_value = p_val) |>
+    dplyr::select(response_id, gRNA_group, p_value) |>
+    dplyr::semi_join(gene_gRNA_group_pairs, by = c("response_id", "gRNA_group")) |>
     tibble::as_tibble()
 }

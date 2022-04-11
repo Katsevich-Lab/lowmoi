@@ -5,23 +5,17 @@
 \title{Run Schraivogel's MAST.cov method}
 \usage{
 schraivogel_method(
-  gene_odm_fp,
-  gene_metadata_fp,
-  grna_odm_fp,
-  grna_metadata_fp,
+  gene_odm,
+  grna_odm,
   gene_gRNA_group_pairs,
   gRNA_groups_table = NULL,
   gRNA_threshold = 8
 )
 }
 \arguments{
-\item{gene_odm_fp}{Filepath for gene expression ODM}
+\item{gene_odm}{gene expression ODM}
 
-\item{gene_metadata_fp}{Filepath for gene expression ODM metadata}
-
-\item{grna_odm_fp}{Filepath for gRNA expression / indicator ODM}
-
-\item{grna_metadata_fp}{Filepath for gRNA expression / indicator ODM metadata}
+\item{grna_odm}{gRNA expression / indicator ODM}
 
 \item{gene_gRNA_group_pairs}{Pairs of genes and gRNA groups to analyze, as in \code{sceptre}}
 
@@ -32,7 +26,7 @@ This argument is optional, and the default assumption is that each gRNA is in it
 which was Schraivogel et al's choice.}
 }
 \value{
-A tibble with three columns: \code{gene_id}, \code{gRNA_group}, \code{p_value}.
+A tibble with three columns: \code{response_id}, \code{gRNA_group}, \code{p_value}.
 The last column is the computed MAST.cov p-value.
 }
 \description{
