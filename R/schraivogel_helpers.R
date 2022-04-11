@@ -1,6 +1,8 @@
 #' MAST DE function
 #'
-#' Perform differential expression analysis between perturbed and control cells using MAST.
+#' Perform differential expression analysis between perturbed and control cells using MAST. This code
+#' was drawn from https://github.com/argschwind/TAPseq_manuscript/blob/master/vignettes/functions/MAST.R
+#' and only lightly edited.
 #'
 #' The first column in colData is expected to provide the perturbation status as a factor with two
 #' levels, where the first level is non-perturbed cells. If this is not the case, the function will
@@ -60,7 +62,10 @@ de_MAST <- function(pert_object) {
 #' Censored mean normalization
 #'
 #' Normalize DGE data based on censored mean, which excludes genes highly expressed genes when
-#' calculating size factors.
+#' calculating size factors. This code
+#' was drawn from https://github.com/argschwind/TAPseq_manuscript/blob/master/vignettes/functions/MAST.R
+#' and only lightly edited.
+#'
 #'
 #' @param dge Matrix or data.frame containing digital gene expression data for all cells and genes
 #'   to be tested. Rows are genes and columns are cells, with row names being gene ids and column
@@ -93,6 +98,8 @@ normalize_cens_mean <- function(dge, percentile = 0.9, norm_counts = FALSE, scal
   }
 }
 
+# This code was drawn from https://github.com/argschwind/TAPseq_manuscript/blob/master/vignettes/functions/functions_runSeuratTest.R
+# and only lightly edited.
 runSeuratTest <- function(g = "DS42_eGATA1_D", DGE, pert, scrcols, scalefun= log1p, normfun = function(x) 1,normcounts=T, covariate) {
 
   is.scramble <- apply(pert[,scrcols],1,function(x) any(x > 0)) & apply(pert[,-scrcols],1,function(x) all(x == 0)) # <<- CHECK!
