@@ -1,15 +1,11 @@
 #' Run Schraivogel's MAST.cov method
 #'
-#' @param response_odm gene (or more generally, response) expression ODM
-#' @param gRNA_odm gRNA expression / indicator ODM
-#' @param response_gRNA_group_pairs Pairs of responses and gRNA groups to analyze, as in \code{sceptre}
+#' @inherit abstract_interface
 #' @param gRNA_groups_table A table specifying which gRNAs are in which groups, as in \code{sceptre}.
 #' This argument is optional, and the default assumption is that each gRNA is in its own group.
 #' @param gRNA_threshold A threshold for gRNA expression. This argument is optional, and defaults to 8,
 #' which was Schraivogel et al's choice.
 #'
-#' @return A tibble with three columns: \code{response_id}, \code{gRNA_group}, \code{p_value}.
-#' The last column is the computed MAST.cov p-value.
 #' @export
 schraivogel_method <- function(response_odm,
                                gRNA_odm,

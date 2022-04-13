@@ -13,11 +13,11 @@ schraivogel_method(
 )
 }
 \arguments{
-\item{response_odm}{gene (or more generally, response) expression ODM}
+\item{response_odm}{an expression ODM of responses (typically genes)}
 
-\item{gRNA_odm}{gRNA expression / indicator ODM}
+\item{gRNA_odm}{an ODM of gRNA expressions/indicators}
 
-\item{response_gRNA_group_pairs}{Pairs of responses and gRNA groups to analyze, as in \code{sceptre}}
+\item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and \code{gRNA_group} giving the response ID / gRNA group pairs to analyze}
 
 \item{gRNA_groups_table}{A table specifying which gRNAs are in which groups, as in \code{sceptre}.
 This argument is optional, and the default assumption is that each gRNA is in its own group.}
@@ -26,8 +26,7 @@ This argument is optional, and the default assumption is that each gRNA is in it
 which was Schraivogel et al's choice.}
 }
 \value{
-A tibble with three columns: \code{response_id}, \code{gRNA_group}, \code{p_value}.
-The last column is the computed MAST.cov p-value.
+a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
 }
 \description{
 Run Schraivogel's MAST.cov method
