@@ -1,8 +1,8 @@
 #' Run Schraivogel's MAST.cov method
 #'
-#' @param gene_odm gene expression ODM
-#' @param grna_odm gRNA expression / indicator ODM
-#' @param gene_gRNA_group_pairs Pairs of genes and gRNA groups to analyze, as in \code{sceptre}
+#' @param response_odm gene (or more generally, response) expression ODM
+#' @param gRNA_odm gRNA expression / indicator ODM
+#' @param response_gRNA_group_pairs Pairs of responses and gRNA groups to analyze, as in \code{sceptre}
 #' @param gRNA_groups_table A table specifying which gRNAs are in which groups, as in \code{sceptre}.
 #' This argument is optional, and the default assumption is that each gRNA is in its own group.
 #' @param gRNA_threshold A threshold for gRNA expression. This argument is optional, and defaults to 8,
@@ -11,12 +11,15 @@
 #' @return A tibble with three columns: \code{response_id}, \code{gRNA_group}, \code{p_value}.
 #' The last column is the computed MAST.cov p-value.
 #' @export
-schraivogel_method <- function(gene_odm,
-                               grna_odm,
-                               gene_gRNA_group_pairs,
+schraivogel_method <- function(response_odm,
+                               gRNA_odm,
+                               response_gRNA_group_pairs,
                                gRNA_groups_table = NULL,
                                gRNA_threshold = 8) {
 
+  gene_odm <- response_odm
+  grna_odm <- gRNA_odm
+  gene_gRNA_group_pairs <- response_gRNA_group_pairs
   # pull the entire gRNA ODM into memory
   grna_data <- grna_odm[[1:nrow(grna_odm),1:ncol(grna_odm)]]
   rownames(grna_data) <- grna_odm |> ondisc::get_feature_ids()

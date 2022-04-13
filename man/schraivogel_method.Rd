@@ -5,19 +5,19 @@
 \title{Run Schraivogel's MAST.cov method}
 \usage{
 schraivogel_method(
-  gene_odm,
-  grna_odm,
-  gene_gRNA_group_pairs,
+  response_odm,
+  gRNA_odm,
+  response_gRNA_group_pairs,
   gRNA_groups_table = NULL,
   gRNA_threshold = 8
 )
 }
 \arguments{
-\item{gene_odm}{gene expression ODM}
+\item{response_odm}{gene (or more generally, response) expression ODM}
 
-\item{grna_odm}{gRNA expression / indicator ODM}
+\item{gRNA_odm}{gRNA expression / indicator ODM}
 
-\item{gene_gRNA_group_pairs}{Pairs of genes and gRNA groups to analyze, as in \code{sceptre}}
+\item{response_gRNA_group_pairs}{Pairs of responses and gRNA groups to analyze, as in \code{sceptre}}
 
 \item{gRNA_groups_table}{A table specifying which gRNAs are in which groups, as in \code{sceptre}.
 This argument is optional, and the default assumption is that each gRNA is in its own group.}
