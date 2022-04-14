@@ -70,7 +70,7 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
                gRNA_group = curr_gRNA,
                p_value = markers_res$p_val)
   })
-  res <- data.table::rbindlist(l = res_list)
+  res <- dplyr::bind_rows(res_list)
   return(res)
 }
 
