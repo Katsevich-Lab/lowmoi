@@ -1,5 +1,7 @@
 #' Run Schraivogel's MAST.cov method
 #'
+#' Runs Schraivogel's MAST.cov method.
+#'
 #' @inherit abstract_interface
 #' @param gRNA_groups_table A table specifying which gRNAs are in which groups, as in \code{sceptre}.
 #' This argument is optional, and the default assumption is that each gRNA is in its own group.

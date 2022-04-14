@@ -29,5 +29,5 @@ which was Schraivogel et al's choice.}
 a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
 }
 \description{
-Run Schraivogel's MAST.cov method
+Runs Schraivogel's MAST.cov method.
 }

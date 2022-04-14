@@ -19,3 +19,22 @@ a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_val
 \description{
 Implements the Suerat differential expression method.
 }
+\examples{
+\dontrun{
+library(ondisc)
+papalexi_offsite <- .get_config_path("LOCAL_PAPALEXI_2021_DATA_DIR")
+papalexi_gene = c(response_odm_fp = paste0(papalexi_offsite,
+"processed/gene/expression_matrix.odm"),
+                 response_metadata_fp = paste0(papalexi_offsite,
+                 "processed/gene/metadata.rds"),
+                 gRNA_odm_fp = paste0(papalexi_offsite,
+                 "processed/gRNA/count_matrix.odm"),
+                 gRNA_metadata_fp = paste0(papalexi_offsite,
+                 "processed/gRNA/metadata.rds"))
+response_odm <- read_odm(papalexi_gene["response_odm_fp"], papalexi_gene["response_metadata_fp"])
+gRNA_odm <- read_odm(papalexi_gene["gRNA_odm_fp"], papalexi_gene["gRNA_metadata_fp"])
+response_gRNA_group_pairs <- data.frame(response_id = get_feature_ids(response_odm),
+gRNA_group = "CUL3g1")
+result <- seurat_de(response_odm, gRNA_odm, response_gRNA_group_pairs)
+}
+}
