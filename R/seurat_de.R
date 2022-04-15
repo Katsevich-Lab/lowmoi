@@ -54,7 +54,8 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
                                        ident.1 = curr_gRNA, ident.2 = "NT", only.pos = FALSE,
                                        logfc.threshold = 0.25, test.use = "wilcox")
     if (nrow(markers_res) == 0) {
-      ret <- NULL
+      ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
+      colnames(ret) <- c("gRNA_group", "p_value", "response_id")
     } else {
       ret <- data.frame(response_id = row.names(markers_res), gRNA_group = curr_gRNA,
                         p_value = markers_res$p_val)
