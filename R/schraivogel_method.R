@@ -15,23 +15,20 @@ schraivogel_method <- function(response_odm,
                                gRNA_groups_table = NULL,
                                gRNA_threshold = 8) {
 
-  gene_odm <- response_odm
-  grna_odm <- gRNA_odm
-  gene_gRNA_group_pairs <- response_gRNA_group_pairs
   # pull the entire gRNA ODM into memory
-  grna_data <- grna_odm[[1:nrow(grna_odm),1:ncol(grna_odm)]]
-  rownames(grna_data) <- grna_odm |> ondisc::get_feature_ids()
-  colnames(grna_data) <- grna_odm |> ondisc::get_cell_barcodes()
+  grna_data <- gRNA_odm[[,1:ncol(gRNA_odm)]]
+  rownames(grna_data) <- gRNA_odm |> ondisc::get_feature_ids()
+  colnames(grna_data) <- gRNA_odm |> ondisc::get_cell_barcodes()
 
   # pull the entire gene expression ODM into memory
-  gene_data <- gene_odm[[1:nrow(gene_odm),1:ncol(gene_odm)]]
-  rownames(gene_data) <- gene_odm |> ondisc::get_feature_ids()
-  colnames(gene_data) <- gene_odm |> ondisc::get_cell_barcodes()
+  gene_data <- response_odm[[,1:ncol(response_odm)]]
+  rownames(gene_data) <- response_odm |> ondisc::get_feature_ids()
+  colnames(gene_data) <- response_odm |> ondisc::get_cell_barcodes()
 
   # threshold the gRNA matrix, unless it is already binary
-  if(max(grna_data) >= 2){
+  if(max(grna_data) >= 2) {
     perturbation_matrix <- sceptre::threshold_gRNA_matrix(grna_data, threshold = gRNA_threshold)
-  } else{
+  } else {
     perturbation_matrix <- grna_data
   }
 
@@ -46,7 +43,7 @@ schraivogel_method <- function(response_odm,
   }
 
   # identify which of the gRNAs are negative controls
-  scramble.cols <- grna_odm |>
+  scramble.cols <- gRNA_odm |>
     ondisc::get_feature_covariates() |>
     dplyr::mutate(NTC = target_type == "non-targeting") |>
     dplyr::pull(NTC) |>
@@ -59,9 +56,9 @@ schraivogel_method <- function(response_odm,
   # this method adjusts for
   ngenes <- apply(gene_data > 0, 2, sum)
 
-  # loop over distinct gRNAs present in gene_gRNA_group_pairs
+  # loop over distinct gRNAs present in response_gRNA_group_pairs
   lapply(
-    gene_gRNA_group_pairs |> dplyr::pull(gRNA_group) |> unique(),
+    response_gRNA_group_pairs |> dplyr::pull(gRNA_group) |> unique(),
     function(gRNA_group) {
       # call the workhorse function, runSeuratTest
       # Note: runSeuratTest will compute the p-values for a given gRNA against
@@ -82,6 +79,6 @@ schraivogel_method <- function(response_odm,
     dplyr::bind_rows() |>
     dplyr::rename(response_id = gene, gRNA_group = guide, p_value = p_val) |>
     dplyr::select(response_id, gRNA_group, p_value) |>
-    dplyr::semi_join(gene_gRNA_group_pairs, by = c("response_id", "gRNA_group")) |>
+    dplyr::semi_join(response_gRNA_group_pairs, by = c("response_id", "gRNA_group")) |>
     tibble::as_tibble()
 }

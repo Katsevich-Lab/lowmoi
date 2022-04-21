@@ -129,7 +129,7 @@ runSeuratTest <- function(g = "DS42_eGATA1_D", DGE, pert, scrcols, scalefun= log
 
   sce <- SingleCellExperiment::SingleCellExperiment(list(counts = Seurat::GetAssayData(testobject, slot = "counts")  ) , colData = data.frame(row.names = colnames(testobject), ident = Seurat::Idents(testobject), cov = testobject$covariate))
   MAST.result <- de_MAST(sce)
-  m <- data.frame(row.names =MAST.result$gene, p_val = MAST.result$pvalue, p_val_adj = stats::p.adjust( MAST.result$pvalue, method = "fdr"), avg_logFC = MAST.result$logFC)
+  m <- data.frame(row.names = MAST.result$gene, p_val = MAST.result$pvalue, p_val_adj = stats::p.adjust( MAST.result$pvalue, method = "fdr"), avg_logFC = MAST.result$logFC)
 
   #m <- FindMarkers(testobject, ident.1 = g, ident.2 = "scramble", test.use = "MAST", logfc.threshold =0 , min.pcr = 0)
   m$guide <- g
