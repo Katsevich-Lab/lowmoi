@@ -48,11 +48,17 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   seurat_obj$aggregate_gRNA <- aggregated_gRNAs
   Seurat::Idents(seurat_obj) <- "aggregate_gRNA"
   unique_gRNA_groups <- as.character(unique(response_gRNA_group_pairs$gRNA_group))
+
+  # remove genes with zero expression
+  # gene_sums <- Matrix::rowSums(seurat_obj[["RNA"]]@counts)
+  # good_genes <- gene_sums > 0
+  # seurat_obj <- seurat_obj[good_genes,]
+
   res_list <- lapply(X = unique_gRNA_groups, FUN = function(curr_gRNA) {
     curr_response_gRNA_group_pairs <- dplyr::filter(response_gRNA_group_pairs, gRNA_group == curr_gRNA)
     markers_res <- Seurat::FindMarkers(object = seurat_obj,
                                        ident.1 = curr_gRNA, ident.2 = "NT", only.pos = FALSE,
-                                       logfc.threshold = 0.0, test.use = "wilcox")
+                                       logfc.threshold = 0.0, test.use = "wilcox", min.pct = 0.01)
     if (nrow(markers_res) == 0) {
       ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
       colnames(ret) <- c("gRNA_group", "p_value", "response_id")
