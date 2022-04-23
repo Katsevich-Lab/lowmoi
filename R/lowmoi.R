@@ -11,3 +11,5 @@ utils::globalVariables(c("NTC", "Pr(>Chisq)", "ci.hi", "ci.lo", "ci_high", "ci_l
 #'
 #' @return a data frame with columns `response_id`, `gRNA_group`, and `p_value`.
 NULL
+
+# small change!
