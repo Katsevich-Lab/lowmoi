@@ -13,3 +13,4 @@ utils::globalVariables(c("NTC", "Pr(>Chisq)", "ci.hi", "ci.lo", "ci_high", "ci_l
 NULL
 
 # small change!
+# small change 2
