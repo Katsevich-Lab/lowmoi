@@ -53,11 +53,3 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   res <- dplyr::bind_rows(l = res_list)
   return(res)
 }
-
-
-load_whole_odm <- function(odm) {
-  out <- odm[[,seq(1, ncol(odm))]]
-  row.names(out) <- ondisc::get_feature_ids(odm)
-  colnames(out) <- ondisc::get_cell_barcodes(odm)
-  return(out)
-}

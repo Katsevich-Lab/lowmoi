@@ -2,5 +2,6 @@
 
 export(dummy_method_1)
 export(dummy_method_2)
+export(load_whole_odm)
 export(schraivogel_method)
 export(seurat_de)

@@ -15,15 +15,9 @@ schraivogel_method <- function(response_odm,
                                gRNA_groups_table = NULL,
                                gRNA_threshold = 8) {
 
-  # pull the entire gRNA ODM into memory
-  grna_data <- gRNA_odm[[,1:ncol(gRNA_odm)]]
-  rownames(grna_data) <- gRNA_odm |> ondisc::get_feature_ids()
-  colnames(grna_data) <- gRNA_odm |> ondisc::get_cell_barcodes()
-
-  # pull the entire gene expression ODM into memory
-  gene_data <- response_odm[[,1:ncol(response_odm)]]
-  rownames(gene_data) <- response_odm |> ondisc::get_feature_ids()
-  colnames(gene_data) <- response_odm |> ondisc::get_cell_barcodes()
+  # pull the entire gRNA and gene ODMs into memory via load_whole_odm
+  grna_data <- load_whole_odm(gRNA_odm)
+  gene_data <- load_whole_odm(response_odm)
 
   # threshold the gRNA matrix, unless it is already binary
   if(max(grna_data) >= 2) {
