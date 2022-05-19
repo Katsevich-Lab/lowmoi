@@ -10,8 +10,6 @@ utils::globalVariables(c("NTC", "Pr(>Chisq)", "ci.hi", "ci.lo", "ci_high", "ci_l
 #' @name abstract_interface
 #'
 #' @return a data frame with columns `response_id`, `gRNA_group`, and `p_value`.
+#' @examples
+#'
 NULL
-
-# small change!
-# small change 2
-# small change 3

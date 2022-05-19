@@ -19,3 +19,6 @@ dummy_method_1(response_odm, gRNA_odm, response_gRNA_group_pairs)
 \description{
 A dummy method; samples uniformly distributed p-values
 }
+\examples{
+
+}

@@ -17,8 +17,7 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
     cell_covariates <- cell_covariates[ok_cells, ]
   }
   gRNA_assignments <- apply(X = gRNA_mat, MARGIN = 2, FUN = function(col) names(which.max(col)))
-  cell_metadata <- dplyr::mutate(data.frame(perturbation = gRNA_assignments),
-                                 dplyr::select(cell_covariates, -n_nonzero, -n_umis))
+  cell_metadata <- dplyr::mutate(data.frame(perturbation = gRNA_assignments), cell_covariates)
   seurat_obj <- Seurat::CreateSeuratObject(counts = response_mat,
                                            assay = "RNA", meta.data = cell_metadata)
   rm(response_mat)

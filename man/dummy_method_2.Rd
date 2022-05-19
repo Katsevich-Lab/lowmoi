@@ -19,3 +19,6 @@ dummy_method_2(response_odm, gRNA_odm, response_gRNA_group_pairs)
 \description{
 A dummy method; samples beta distributed p-values
 }
+\examples{
+
+}

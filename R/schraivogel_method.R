@@ -20,7 +20,7 @@ schraivogel_method <- function(response_odm,
   gene_data <- load_whole_odm(response_odm)
 
   # threshold the gRNA matrix, unless it is already binary
-  if(max(grna_data) >= 2) {
+  if (max(grna_data) >= 2) {
     perturbation_matrix <- sceptre::threshold_gRNA_matrix(grna_data, threshold = gRNA_threshold)
   } else {
     perturbation_matrix <- grna_data
