@@ -10,14 +10,6 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   gRNA_feature_covariates <- ondisc::get_feature_covariates(gRNA_odm)
   cell_covariates <- ondisc::get_cell_covariates(response_odm)
 
-  #cell_lib_sizes <- Matrix::colSums(gRNA_mat)
-  #ok_cells <- cell_lib_sizes >= 5
-  #if (!all(ok_cells)) {
-  #  response_mat <- response_mat[, ok_cells]
-  #  gRNA_mat <- gRNA_mat[, ok_cells]
-  #  cell_covariates <- cell_covariates[ok_cells, ]
-  #}
-
   gRNA_assignments <- apply(X = gRNA_mat, MARGIN = 2, FUN = function(col) names(which.max(col)))
   cell_metadata <- dplyr::mutate(data.frame(perturbation = gRNA_assignments), cell_covariates)
   seurat_obj <- Seurat::CreateSeuratObject(counts = response_mat,
@@ -32,16 +24,11 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   Seurat::Idents(seurat_obj) <- "aggregate_gRNA"
   unique_gRNA_groups <- as.character(unique(response_gRNA_group_pairs$gRNA_group))
 
-  # remove genes with zero expression
-  # gene_sums <- Matrix::rowSums(seurat_obj[["RNA"]]@counts)
-  # good_genes <- gene_sums > 0
-  # seurat_obj <- seurat_obj[good_genes,]
-
   res_list <- lapply(X = unique_gRNA_groups, FUN = function(curr_gRNA) {
     curr_response_gRNA_group_pairs <- dplyr::filter(response_gRNA_group_pairs, gRNA_group == curr_gRNA)
     markers_res <- Seurat::FindMarkers(object = seurat_obj,
                                        ident.1 = curr_gRNA, ident.2 = "NT", only.pos = FALSE,
-                                       logfc.threshold = 0.0, test.use = "wilcox", min.pct = 0.005)
+                                       logfc.threshold = 0.0, test.use = "wilcox", min.pct = 0.000)
     if (nrow(markers_res) == 0) {
       ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
       colnames(ret) <- c("gRNA_group", "p_value", "response_id")
