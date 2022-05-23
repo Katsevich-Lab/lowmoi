@@ -28,7 +28,7 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
     curr_response_gRNA_group_pairs <- dplyr::filter(response_gRNA_group_pairs, gRNA_group == curr_gRNA)
     markers_res <- Seurat::FindMarkers(object = seurat_obj,
                                        ident.1 = curr_gRNA, ident.2 = "NT", only.pos = FALSE,
-                                       logfc.threshold = 0.0, test.use = "wilcox", min.pct = 0.000)
+                                       logfc.threshold = 0.0, test.use = "wilcox", min.pct = 0.0)
     if (nrow(markers_res) == 0) {
       ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
       colnames(ret) <- c("gRNA_group", "p_value", "response_id")
