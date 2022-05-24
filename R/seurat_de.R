@@ -16,8 +16,7 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
                                            assay = "RNA", meta.data = cell_metadata)
   rm(response_mat)
   seurat_obj <- Seurat::NormalizeData(seurat_obj)
-  neg_control_gRNAs <- row.names(dplyr::filter(gRNA_feature_covariates,
-                                               target_type == "non-targeting"))
+  neg_control_gRNAs <- row.names(dplyr::filter(gRNA_feature_covariates, target_type == "non-targeting"))
   aggregated_gRNAs <- ifelse(cell_metadata$perturbation %in%
                                neg_control_gRNAs, "NT", cell_metadata$perturbation)
   seurat_obj$aggregate_gRNA <- aggregated_gRNAs
@@ -26,9 +25,10 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
 
   res_list <- lapply(X = unique_gRNA_groups, FUN = function(curr_gRNA) {
     curr_response_gRNA_group_pairs <- dplyr::filter(response_gRNA_group_pairs, gRNA_group == curr_gRNA)
-    markers_res <- Seurat::FindMarkers(object = seurat_obj,
+    markers_res <- Seurat::FindMarkers(object = seurat_obj[curr_response_gRNA_group_pairs$response_id,],
                                        ident.1 = curr_gRNA, ident.2 = "NT", only.pos = FALSE,
                                        logfc.threshold = 0.0, test.use = "wilcox", min.pct = 0.0)
+
     if (nrow(markers_res) == 0) {
       ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
       colnames(ret) <- c("gRNA_group", "p_value", "response_id")
