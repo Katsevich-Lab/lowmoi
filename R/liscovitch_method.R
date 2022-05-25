@@ -8,7 +8,7 @@
 #' response_odm <- load_dataset_modality("liscovitch/experiment_small/chromatin")
 #' gRNA_odm <- load_dataset_modality("liscovitch/experiment_small/grna")
 #' response_gRNA_group_pairs <- expand.grid(response_id = response_odm |> ondisc::get_feature_ids(),
-#' grna_group = (gRNA_odm |> ondisc::get_feature_ids())[1:2])
+#' gRNA_group = (gRNA_odm |> ondisc::get_feature_ids())[1:2])
 #' res <- liscovitch_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
 liscovitch_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   chrom_data <- as.matrix(load_whole_odm(response_odm))
@@ -29,7 +29,7 @@ liscovitch_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs)
   neg_control_idxs <- grna_assignments %in% neg_control_gRNAs
   # cycle through response-gRNA table
   p_vals <- apply(X = response_gRNA_group_pairs, MARGIN = 1, FUN = function(r) {
-    grna <- as.character(r[["grna_group"]])
+    grna <- as.character(r[["gRNA_group"]])
     response <- as.character(r[["response_id"]])
     target_cells <- z_score_mat[response, grna == grna_assignments]
     control_cells <- z_score_mat[response, neg_control_idxs]
