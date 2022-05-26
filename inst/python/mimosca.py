@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import sparse
-from sklearn.linear_model import ElasticNet
 from statsmodels.distributions.empirical_distribution import ECDF
+from sklearn.linear_model import ElasticNet
 
 ##############
 # MY FUNCTIONS
@@ -12,7 +12,7 @@ def get_dense_array(pieces):
     indptr = pieces[2]
     n_row = pieces[3]
     n_col = pieces[4]
-    x = sparse.csc_array((data, indices, indptr), (n_row, n_col))
+    x = sparse.csc_matrix((data, indices, indptr), (n_row, n_col))
     ret = x.toarray()
     return(ret)
 

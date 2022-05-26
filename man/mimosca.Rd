@@ -22,9 +22,11 @@ Mimosca
 Implements the MIMOSCA method.
 }
 \examples{
+\dontrun{
 response_odm <- load_dataset_modality("frangieh/control/gene")
 response_odm <- response_odm[1:100,]
 gRNA_odm <- load_dataset_modality("frangieh/control/grna")
-response_gRNA_group_pairs <- data.frame(response_id = response_odm |> get_feature_ids(),
+response_gRNA_group_pairs <- data.frame(response_id = response_odm |> ondisc::get_feature_ids(),
 gRNA_group = "TTGCGGCCTCGATACGATAT")
+}
 }

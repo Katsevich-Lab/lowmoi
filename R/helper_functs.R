@@ -38,8 +38,12 @@ load_whole_odm <- function(odm) {
 #' @export
 #'
 #' @examples
-#' schraivogel_enhancer_screen_chr11_gene <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-#' schraivogel_enhancer_screen_chr11_grna <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
+#' \dontrun{
+#' schraivogel_enhancer_screen_chr11_gene <-
+#' load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
+#' schraivogel_enhancer_screen_chr11_grna <-
+#' load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
+#' }
 load_dataset_modality <- function(data_fp, offsite_dir = .get_config_path("LOCAL_SCEPTRE2_DATA_DIR")) {
   modality_dir <- paste0(offsite_dir, "data/", data_fp)
   odm <- ondisc::read_odm(odm_fp = paste0(modality_dir, "/matrix.odm"),

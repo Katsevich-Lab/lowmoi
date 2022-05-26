@@ -21,6 +21,10 @@ the (QC'ed) ODM
 Load dataset modality
 }
 \examples{
-schraivogel_enhancer_screen_chr11_gene <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-schraivogel_enhancer_screen_chr11_grna <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
+\dontrun{
+schraivogel_enhancer_screen_chr11_gene <-
+load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
+schraivogel_enhancer_screen_chr11_grna <-
+load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
+}
 }

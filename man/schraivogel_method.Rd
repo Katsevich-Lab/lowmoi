@@ -31,6 +31,3 @@ a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_val
 \description{
 Runs Schraivogel's MAST.cov method.
 }
-\examples{
-
-}

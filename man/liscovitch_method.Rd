@@ -20,9 +20,11 @@ a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_val
 Implements the differential expression method of Liscovitch
 }
 \examples{
+\dontrun{
 response_odm <- load_dataset_modality("liscovitch/experiment_small/chromatin")
 gRNA_odm <- load_dataset_modality("liscovitch/experiment_small/grna")
 response_gRNA_group_pairs <- expand.grid(response_id = response_odm |> ondisc::get_feature_ids(),
 gRNA_group = (gRNA_odm |> ondisc::get_feature_ids())[1:2])
 res <- liscovitch_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
+}
 }

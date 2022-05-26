@@ -14,11 +14,8 @@ dummy_method_2(response_odm, gRNA_odm, response_gRNA_group_pairs)
 \item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and \code{gRNA_group} giving the response ID / gRNA group pairs to analyze}
 }
 \value{
-
+a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
 }
 \description{
 A dummy method; samples beta distributed p-values
-}
-\examples{
-
 }
