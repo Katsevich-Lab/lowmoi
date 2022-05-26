@@ -74,3 +74,26 @@ get_data_method_ram_matrix_from_small_result <- function(res, p_increase = 1.08)
   cat(out_str)
 }
 
+
+#' Get control group for method
+#'
+#' A given method has a "treatment group" (i.e., the set of cells receiving the perturbation in question)
+#' and a "control group" (i.e., the set of cells against which the treatment group is compared). For some
+#' methods the "control group" is the set of negative control gRNAs, and for other methods the control group
+#' is set of all cells that did not receive the perturbation in question. This function returns the control group
+#' of a given method, either "non_targeting_cells" or "all_other_cells".
+#'
+#' @param method the name of a method
+#'
+#' @return the control group as a character string, one of "non_targeting_cells" or "all_other_cells"
+#' @export
+get_control_group_for_method <- function(method) {
+  if (method %in% c("schraivogel_method", "seurat_de", "liscovitch_method")) {
+    control_group <- "non_targeting_cells"
+  } else if (method %in% c("mimosca")) {
+    control_group <- "all_other_cells"
+  } else {
+    stop("Method not recognized.")
+  }
+  return(control_group)
+}

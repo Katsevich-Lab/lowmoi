@@ -2,9 +2,11 @@
 
 export(dummy_method_1)
 export(dummy_method_2)
+export(get_control_group_for_method)
 export(get_data_method_ram_matrix_from_small_result)
 export(liscovitch_method)
 export(load_dataset_modality)
 export(load_whole_odm)
+export(mimosca)
 export(schraivogel_method)
 export(seurat_de)
