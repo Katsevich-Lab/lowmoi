@@ -23,10 +23,10 @@ Implements the MIMOSCA method.
 }
 \examples{
 \dontrun{
-response_odm <- load_dataset_modality("frangieh/control/gene")
-response_odm <- response_odm[1:100,]
-gRNA_odm <- load_dataset_modality("frangieh/control/grna")
-response_gRNA_group_pairs <- data.frame(response_id = response_odm |> ondisc::get_feature_ids(),
-gRNA_group = "TTGCGGCCTCGATACGATAT")
+response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
+gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
+response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()),
+gRNA_group = c("GATA1-C", "GATA1-D"))
+result <- mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs)
 }
 }
