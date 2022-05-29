@@ -101,3 +101,13 @@ get_control_group_for_method <- function(method) {
   }
   return(control_group)
 }
+
+
+#' Get sparse matrix pieces
+#'
+#' @param csc_mat a sparse matrix in CSC format
+#'
+#' @return a list containing x, i, p, Dim(1), and Dim(2) (in that order)
+get_sparse_matrix_pieces <- function(csc_mat) {
+  list(csc_mat@x, csc_mat@i, csc_mat@p, csc_mat@Dim[1], csc_mat@Dim[2])
+}

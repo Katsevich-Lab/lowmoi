@@ -25,11 +25,7 @@ mimosca <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1
   gRNA_names <- colnames(gRNA_mat_t)
 
   # load the python functions
-  retic <- tryCatch({
-    reticulate::py_run_file(system.file("python", "mimosca.py", package = "lowmoi"))
-  }, error = function(cond) {
-    reticulate::py_run_file(system.file("python", "mimosca.py", package = "lowmoi"))
-  })
+  retic <- reticulate::py_run_file(system.file("python", "mimosca.py", package = "lowmoi"))
 
   # apply mimosca
   unique_gRNAs <- as.character(unique(response_gRNA_group_pairs$gRNA_group))
@@ -71,14 +67,4 @@ return_dense_mat <- function(response_odm) {
   response_mat <- load_whole_odm(response_odm)
   out <- retic$get_dense_array(get_sparse_matrix_pieces(response_mat))
   return(out)
-}
-
-
-#' Get sparse matrix pieces
-#'
-#' @param csc_mat a sparse matrix in CSC format
-#'
-#' @return a list containing x, i, p, Dim(1), and Dim(2) (in that order)
-get_sparse_matrix_pieces <- function(csc_mat) {
-  list(csc_mat@x, csc_mat@i, csc_mat@p, csc_mat@Dim[1], csc_mat@Dim[2])
 }
