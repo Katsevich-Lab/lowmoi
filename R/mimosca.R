@@ -41,7 +41,7 @@ mimosca <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1
                         n_rep)
       out_df <- data.frame(response_id = response_names,
                            gRNA_group = curr_gRNA,
-                           p_val = p_vals)
+                           p_value = p_vals)
   })
   ret <- dplyr::left_join(response_gRNA_group_pairs,
                           do.call(what = "rbind", args = res_list))
