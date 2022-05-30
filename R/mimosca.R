@@ -39,21 +39,3 @@ mimosca <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1
                           do.call(what = "rbind", args = res_list))
   return(ret)
 }
-
-#' Return dense matrix
-#'
-#' Returns a dense matrix representation of response_odm
-#'
-#' @param response_odm an ondisc object
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-#' dense_mat <- return_dense_mat(response_odm)
-#' }
-return_dense_mat <- function(response_odm) {
-  response_mat <- load_whole_odm(response_odm)
-  out <- get_dense_array(get_sparse_matrix_pieces(response_mat))
-  return(out)
-}
