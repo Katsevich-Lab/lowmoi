@@ -5,7 +5,7 @@
 \title{Mimosca
 Implements the MIMOSCA method.}
 \usage{
-mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs)
+mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1000)
 }
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
@@ -25,8 +25,7 @@ Implements the MIMOSCA method.
 \dontrun{
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
-response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()),
-gRNA_group = c("GATA1-C", "GATA1-D"))
+response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
 result <- mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs)
 }
 }

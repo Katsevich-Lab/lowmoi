@@ -21,24 +21,16 @@ mimosca <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1
     out[which.max(col)] <- 1L
     return(out)
   }) |> Matrix::t()
-  gRNA_mat_t_bin <- as(gRNA_mat_t_bin, "dgCMatrix") == 1
+  gRNA_mat_t_bin <- methods::as(gRNA_mat_t_bin, "dgCMatrix") == 1
   gRNA_names <- colnames(gRNA_mat_t)
-
-  # load the python functions
-  retic <- tryCatch({
-    reticulate::py_run_file(system.file("python", "mimosca.py", package = "lowmoi"))
-  }, error = function(cond) {
-    reticulate::py_run_file(system.file("python", "mimosca.py", package = "lowmoi"))
-  })
-
   # apply mimosca
   unique_gRNAs <- as.character(unique(response_gRNA_group_pairs$gRNA_group))
   res_list <- lapply(unique_gRNAs, function(curr_gRNA) {
       cov_ind <- which(curr_gRNA == gRNA_names) - 1L
-      p_vals <- retic$run_mimosca(get_sparse_matrix_pieces(response_mat_t),
-                        get_sparse_matrix_pieces(gRNA_mat_t),
-                        cov_ind,
-                        n_rep)
+      p_vals <- run_mimosca(get_sparse_matrix_pieces(response_mat_t),
+                            get_sparse_matrix_pieces(gRNA_mat_t),
+                            cov_ind,
+                            n_rep)
       out_df <- data.frame(response_id = response_names,
                            gRNA_group = curr_gRNA,
                            p_value = p_vals)
@@ -47,7 +39,6 @@ mimosca <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1
                           do.call(what = "rbind", args = res_list))
   return(ret)
 }
-
 
 #' Return dense matrix
 #'
@@ -62,17 +53,10 @@ mimosca <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1
 #' dense_mat <- return_dense_mat(response_odm)
 #' }
 return_dense_mat <- function(response_odm) {
-  # load the mimosca function
-  retic <- tryCatch({
-    reticulate::py_run_file(system.file("python", "mimosca.py", package = "lowmoi"))
-  }, error = function(cond) {
-    reticulate::py_run_file(system.file("python", "mimosca.py", package = "lowmoi"))
-  })
   response_mat <- load_whole_odm(response_odm)
-  out <- retic$get_dense_array(get_sparse_matrix_pieces(response_mat))
+  out <- get_dense_array(get_sparse_matrix_pieces(response_mat))
   return(out)
 }
-
 
 #' Get sparse matrix pieces
 #'
