@@ -57,12 +57,3 @@ return_dense_mat <- function(response_odm) {
   out <- get_dense_array(get_sparse_matrix_pieces(response_mat))
   return(out)
 }
-
-#' Get sparse matrix pieces
-#'
-#' @param csc_mat a sparse matrix in CSC format
-#'
-#' @return a list containing x, i, p, Dim(1), and Dim(2) (in that order)
-get_sparse_matrix_pieces <- function(csc_mat) {
-  list(csc_mat@x, csc_mat@i, csc_mat@p, csc_mat@Dim[1], csc_mat@Dim[2])
-}
