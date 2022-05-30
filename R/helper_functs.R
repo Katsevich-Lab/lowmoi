@@ -59,17 +59,17 @@ load_dataset_modality <- function(data_fp, offsite_dir = .get_config_path("LOCAL
 #'
 #' @return NULL (prints matrix to console)
 #' @export
-get_data_method_ram_matrix_from_small_result <- function(res, p_increase = 1.08) {
+get_data_method_ram_matrix_from_small_result <- function(res, p_increase = 1.1) {
   summary <- res |>
     dplyr::group_by(dataset, method) |>
-    dplyr::summarize(max_ram = 1.2 * max_ram[1]) |>
+    dplyr::summarize(max_ram = max_ram[1]) |>
     dplyr::ungroup() |>
     tidyr::pivot_wider(names_from = "method", values_from = "max_ram") |>
     dplyr::arrange(dataset)
 
   ram_df <- summary |> dplyr::select(-dataset)
   ram_df_boost <- (p_increase * ram_df) |> ceiling()
-  ram_df_boost <- ram_df_boost[, sort(colnames(ram_df_boost))]
+  ram_df_boost <- ram_df_boost[, sort(colnames(ram_df_boost)), drop = FALSE]
 
   out_str <- "["
   for (i in 1:nrow(ram_df_boost)) {
