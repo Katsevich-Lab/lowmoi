@@ -74,8 +74,8 @@ class CellPopulation:
         if calculate_statistics:
             # fill out the list of gene properties
             print("Generating summary statistics...")
-            gene_list['mean'] = matrix.mean()
-            gene_list['std'] = matrix.std()
+            gene_list['mean'] = matrix.mean(0)
+            gene_list['std'] = matrix.std(0)
             gene_list['cv'] = gene_list['std']/gene_list['mean']
             gene_list['fano'] = gene_list['std']**2/gene_list['mean']
             gene_list['in_matrix'] = True
