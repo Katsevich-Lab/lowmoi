@@ -4,7 +4,7 @@
 \alias{get_data_method_ram_matrix_from_small_result}
 \title{Get data method RAM matrix from small result}
 \usage{
-get_data_method_ram_matrix_from_small_result(res, p_increase = 1.08)
+get_data_method_ram_matrix_from_small_result(res, p_increase = 1.1)
 }
 \arguments{
 \item{res}{the result data frame}
