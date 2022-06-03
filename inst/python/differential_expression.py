@@ -108,7 +108,7 @@ def ks_de(pop, key, control_cells, genes=None, cells=None, normalized=False, n_j
     print("{0} control cells".format(control_matrix.shape[0]))
     subpops = pop.groupby(key, cells=cells, genes=genes, normalized=normalized, **kwargs)
     
-    out = Parallel(n_jobs=n_jobs, verbose=10)(delayed(_ks_compare_pops)(subpop, control_matrix, name) for name, subpop in subpops)
+    out = Parallel(n_jobs=n_jobs, verbose=10)(delayed(ks_compare_pops)(subpop, control_matrix, name) for name, subpop in subpops)
     
     Ks, ps = zip(*out)
     Ks = pd.DataFrame(list(Ks)).T
@@ -157,7 +157,7 @@ def _multi_test_correct(p, alpha, multi_method):
     _, corr_p_values, _, _ = multipletests(p, alpha=alpha, method=multi_method)
     return corr_p_values
     
-def _ks_compare_pops(first_pop_matrix, second_pop_matrix, name=None):
+def ks_compare_pops(first_pop_matrix, second_pop_matrix, name=None):
     """Helper function used to execute Kolmogorov-Smirnov test. See ks_de.
     """
     KS_stats = dict()

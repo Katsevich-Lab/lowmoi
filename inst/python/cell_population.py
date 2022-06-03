@@ -74,8 +74,8 @@ class CellPopulation:
         if calculate_statistics:
             # fill out the list of gene properties
             print("Generating summary statistics...")
-            gene_list['mean'] = matrix.mean()
-            gene_list['std'] = matrix.std()
+            gene_list['mean'] = matrix.mean(0)
+            gene_list['std'] = matrix.std(0)
             gene_list['cv'] = gene_list['std']/gene_list['mean']
             gene_list['fano'] = gene_list['std']**2/gene_list['mean']
             gene_list['in_matrix'] = True
@@ -83,9 +83,9 @@ class CellPopulation:
         
         self.cells = cell_list
         
-        if calculate_statistics:
-            self.cells['gem_group'] = self.cells.index.map(lambda x: int(x.split('-')[-1]))
-            self.guides = sorted(cell_list[cell_list['single_cell']]['guide_identity'].unique())
+        # if calculate_statistics:
+        #     self.cells['gem_group'] = self.cells.index.map(lambda x: int(x.split('-')[-1]))
+        #     self.guides = sorted(cell_list[cell_list['single_cell']]['guide_identity'].unique())
         
         self.source = source
                 
@@ -277,12 +277,12 @@ class CellPopulation:
         else:
             matrix = self.matrix
             
-        if densify and isinstance(matrix, pd.SparseDataFrame):
-            if not normalized:
-                print('(where) Densifying matrix...')
-            else:
-                print('(where) Densifying normalized matrix...')
-            matrix = matrix.to_dense()
+        # if densify and isinstance(matrix, pd.SparseDataFrame):
+        #     if not normalized:
+        #         print('(where) Densifying matrix...')
+        #     else:
+        #         print('(where) Densifying normalized matrix...')
+        #     matrix = matrix.to_dense()
                 
         # if no queries, just return the expression matrix
         if (genes is None) & (cells is None):
@@ -513,14 +513,15 @@ class CellPopulation:
             
         # if the data matrix is sparse we densify it before iterating so that 
         # this operation is performed only once
-        if not data_normalized and isinstance(self.matrix, pd.SparseDataFrame) and densify:
-            sparsify = True
-            self.densify_matrix()
-        elif data_normalized and isinstance(self.normalized_matrix, pd.SparseDataFrame) and densify:
-            sparsify = True
-            self.densify_normalized_matrix()
-        else:
-            sparsify = False
+        # if not data_normalized and isinstance(self.matrix, pd.SparseDataFrame) and densify:
+        #     sparsify = True
+        #     self.densify_matrix()
+        # elif data_normalized and isinstance(self.normalized_matrix, pd.SparseDataFrame) and densify:
+        #     sparsify = True
+        #     self.densify_normalized_matrix()
+        # else:
+        #     sparsify = False
+        sparsify = False
 
         if cells is None:
             keys = sorted(self.cells[key_name].unique())
@@ -989,7 +990,7 @@ class CellPopulation:
         """
         num_graphs = len(properties)
     
-        if types is None or types is 'discrete':
+        if types == None or types == 'discrete':
             types = ('trait',)*num_graphs
         elif len(types) == 1:
             types = (types,)*num_graphs

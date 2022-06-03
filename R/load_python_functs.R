@@ -23,5 +23,5 @@
   diff_exp_module <- reticulate::import_from_path(module = "differential_expression",
                                                   path = py_modules_path,
                                                   delay_load = TRUE)
-  assign('ks_de', diff_exp_module$ks_de, envir = topenv())
+  assign('ks_compare_pops', diff_exp_module$ks_compare_pops, envir = topenv())
 }
