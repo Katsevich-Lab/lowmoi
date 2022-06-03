@@ -4,7 +4,13 @@
 \alias{dummy_method_2}
 \title{Dummy method 2}
 \usage{
-dummy_method_2(response_odm, gRNA_odm, response_gRNA_group_pairs)
+dummy_method_2(
+  response_odm,
+  gRNA_odm,
+  response_gRNA_group_pairs,
+  shape1 = 5,
+  shape2 = 10
+)
 }
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
@@ -12,10 +18,23 @@ dummy_method_2(response_odm, gRNA_odm, response_gRNA_group_pairs)
 \item{gRNA_odm}{an ODM of gRNA expressions/indicators}
 
 \item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and \code{gRNA_group} giving the response ID / gRNA group pairs to analyze}
+
+\item{shape1}{first shape of beta distribution; if character, cast to numeric}
+
+\item{shape2}{second shape of beta distribution; if character, cast to numeric}
 }
 \value{
 a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
 }
 \description{
 A dummy method; samples beta distributed p-values
+}
+\examples{
+\dontrun{
+gene_odm <- load_dataset_modality("frangieh/co_culture/gene")
+gRNA_odm <- load_dataset_modality("frangieh/co_culture/grna")
+response_gRNA_group_pairs <-
+data.frame(response_id = sample(ondisc::get_feature_ids(gene_odm), 500, FALSE),
+gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 500, FALSE))
+}
 }

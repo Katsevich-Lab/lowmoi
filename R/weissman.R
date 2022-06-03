@@ -7,12 +7,13 @@
 #' \dontrun{
 #' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 #' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
-#' response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
+#' response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()),
+#' gRNA_group = c("GATA1-C", "GATA1-D"))
 #' result <- mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs)
 #' }
 weissman <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   # THIS FUNCTION IS UNDER CONSTRUCTION!
-  
+
   # load the data, transposing the matrices (as is required by mimosca)
   response_mat_t <- Matrix::t(load_whole_odm(response_odm))
   response_names <- colnames(response_mat_t)
@@ -29,7 +30,7 @@ weissman <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   cell_pop <- CellPopulation(matrix = ,
                              cell_list = ,
                              gene_list = )
-  
+
   # apply mimosca
   unique_gRNAs <- as.character(unique(response_gRNA_group_pairs$gRNA_group))
   res_list <- lapply(unique_gRNAs, function(curr_gRNA) {

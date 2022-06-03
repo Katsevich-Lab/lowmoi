@@ -25,7 +25,8 @@ Implements the Weissman method.
 \dontrun{
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
-response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
+response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()),
+gRNA_group = c("GATA1-C", "GATA1-D"))
 result <- mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs)
 }
 }
