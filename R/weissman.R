@@ -61,7 +61,7 @@ weissman <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   )
 }
 
-#' Converse from ODM to CellPopulation format
+#' Convert from ODM to CellPopulation format
 #'
 #' @param response_odm ODM for response variable
 #' @param gRNA_odm  ODM for gRNAs
