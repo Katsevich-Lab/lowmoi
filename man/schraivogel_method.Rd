@@ -31,3 +31,12 @@ a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_val
 \description{
 Runs Schraivogel's MAST.cov method.
 }
+\examples{
+\dontrun{
+gene_odm <- load_dataset_modality("frangieh/co_culture/gene")
+gRNA_odm <- load_dataset_modality("frangieh/co_culture/grna")
+response_gRNA_group_pairs <-
+data.frame(response_id = sample(ondisc::get_feature_ids(gene_odm), 500, FALSE),
+gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 500, FALSE))
+}
+}

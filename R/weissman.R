@@ -103,10 +103,10 @@ odm_to_cell_pop <- function(response_odm, gRNA_odm) {
   }
   cells_df <- cells_df |>
     dplyr::left_join(gRNA_odm |> # join with gRNA metadata to get guide targets
-      ondisc::get_feature_covariates() |>
-      tibble::rownames_to_column(var = "guide_identity") |>
-      dplyr::select(guide_identity, target),
-    by = "guide_identity"
+                       ondisc::get_feature_covariates() |>
+                       tibble::rownames_to_column(var = "guide_identity") |>
+                       dplyr::select(guide_identity, target),
+                     by = "guide_identity"
     ) |>
     dplyr::rename(UMI_count = n_umis, gem_group = batch, guide_target = target) |>
     dplyr::mutate(gem_group = as.integer(as.factor(gem_group))) |>

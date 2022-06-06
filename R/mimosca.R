@@ -2,14 +2,8 @@
 #' Implements the MIMOSCA method.
 #'
 #' @inherit abstract_interface
+#' @param n_rep number of permutations to use
 #' @export
-#' @examples
-#' \dontrun{
-#' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-#' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
-#' response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
-#' result <- mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs)
-#' }
 mimosca <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1000) {
   # load the data, transposing the matrices (as is required by mimosca)
   response_mat_t <- Matrix::t(load_whole_odm(response_odm))

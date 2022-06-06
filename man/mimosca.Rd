@@ -13,6 +13,8 @@ mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1000)
 \item{gRNA_odm}{an ODM of gRNA expressions/indicators}
 
 \item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and \code{gRNA_group} giving the response ID / gRNA group pairs to analyze}
+
+\item{n_rep}{number of permutations to use}
 }
 \value{
 a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
@@ -23,9 +25,10 @@ Implements the MIMOSCA method.
 }
 \examples{
 \dontrun{
-response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
-response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
-result <- mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs)
+gene_odm <- load_dataset_modality("frangieh/co_culture/gene")
+gRNA_odm <- load_dataset_modality("frangieh/co_culture/grna")
+response_gRNA_group_pairs <-
+data.frame(response_id = sample(ondisc::get_feature_ids(gene_odm), 500, FALSE),
+gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 500, FALSE))
 }
 }
