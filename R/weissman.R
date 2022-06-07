@@ -10,10 +10,21 @@
 #' response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
 #' result <- weissman(response_odm, gRNA_odm, response_gRNA_group_pairs)
 #' }
-weissman <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
+weissman <- function(response_odm, response_gRNA_group_pairs, gRNA_assignment_method = "original", gRNA_odm = NULL) {
+  # get perturbation assignments
+  pert_assignments <- switch(gRNA_assignment_method,
+    original = {
+      response_odm |>
+        ondisc::get_cell_covariates() |>
+        pull(perturbation)
+    },
+    {
+      stop("Invalid specification of gRNA_assignment_method.")
+    }
+  )
 
   # convert to CellPopulation format
-  cell_pop <- odm_to_cell_pop(response_odm, gRNA_odm)
+  cell_pop <- odm_to_cell_pop(response_odm, pert_assignments)
 
   # normalize data
   cell_pop$normalized_matrix <- normalize_to_gemgroup_control(
@@ -64,10 +75,10 @@ weissman <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
 #' Convert from ODM to CellPopulation format
 #'
 #' @param response_odm ODM for response variable
-#' @param gRNA_odm  ODM for gRNAs
+#' @param pert_assignments Character vector of perturbation assignments, one per cell
 #'
 #' @return An object of type `CellPopulation` that the `perturbseq` library expects
-odm_to_cell_pop <- function(response_odm, gRNA_odm) {
+odm_to_cell_pop <- function(response_odm, pert_assignments) {
   # load the data, transposing the matrices
   response_mat_t <- response_odm |>
     load_whole_odm() |>
@@ -88,16 +99,10 @@ odm_to_cell_pop <- function(response_odm, gRNA_odm) {
   # create genes_df for input to CellPopulation constructor
   genes_df <- data.frame(gene_name = feature_names, row.names = feature_ids)
 
-  # assign gRNAs to cells based on max rule
-  # (temporary...eventually should make gRNA assignment part of dataset)
-  gRNA_mat <- load_whole_odm(gRNA_odm)
-  gRNA_names <- rownames(gRNA_mat)
-  guide_identities <- gRNA_names[apply(X = gRNA_mat, MARGIN = 2, which.max)]
-
   # create cells_df for input to CellPopulation constructor
   cells_df <- ondisc::get_cell_covariates(response_odm) |>
     tibble::rownames_to_column(var = "cell_barcode") |>
-    dplyr::mutate(guide_identity = guide_identities) # add gRNA assignments
+    dplyr::mutate(guide_identity = pert_assignments) # add gRNA assignments
   if (!("batch" %in% names(cells_df))) {
     cells_df$batch <- 1 # add batch information if it is not present
   }
