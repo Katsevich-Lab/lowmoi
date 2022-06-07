@@ -5,16 +5,13 @@ utils::globalVariables(c("NTC", "Pr(>Chisq)", "ci.hi", "ci.lo", "ci_high", "ci_l
 #' Abstract method interface
 #'
 #' @param response_odm an expression ODM of responses (typically genes)
+#' @param gRNA_odm an ODM of either gRNA expressions (counts) or gRNA
+#' assignments (logical)
 #' @param response_gRNA_group_pairs a data frame with columns `response_id` and
 #' `gRNA_group` giving the response ID / gRNA group pairs to analyze. NOTE: the
 #' gRNA groups currently are assumed to be singleton groups, specified by their
 #' gRNA IDs. Adding functionality to support more general gRNA groups is on our
 #' longer-term to do list.
-#' @param gRNA_assignment_method a string indicating which method to use for
-#' gRNA assignment (each method should support at least the default value
-#' "original", which uses the original gRNA assignments in the `perturbation`
-#' column of the cell covariates of `response_odm`)
-#' @param gRNA_odm an ODM of gRNA expressions (default NULL)
 #' @name abstract_interface
 #'
 #' @return a data frame with columns `response_id`, `gRNA_group`, and `p_value`.
