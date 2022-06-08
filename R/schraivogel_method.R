@@ -9,6 +9,13 @@
 #' which was Schraivogel et al's choice.
 #'
 #' @export
+#' @examples
+#' \dontrun{
+#' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
+#' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
+#' response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
+#' result <- weissman(response_odm, gRNA_odm, response_gRNA_group_pairs)
+#' }
 schraivogel_method <- function(response_odm,
                                gRNA_odm,
                                response_gRNA_group_pairs,
@@ -20,7 +27,7 @@ schraivogel_method <- function(response_odm,
   gene_data <- load_whole_odm(response_odm)
 
   # threshold the gRNA matrix, unless it is already binary
-  if (max(grna_data) >= 2) {
+  if (!gRNA_odm@ondisc_matrix@logical_mat) {
     perturbation_matrix <- sceptre::threshold_gRNA_matrix(grna_data, threshold = gRNA_threshold)
   } else {
     perturbation_matrix <- grna_data

@@ -3,3 +3,4 @@
 .Rdata
 .httr-oauth
 .DS_Store
+/inst/python/__pycache__/*
