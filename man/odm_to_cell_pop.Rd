@@ -2,18 +2,18 @@
 % Please edit documentation in R/weissman.R
 \name{odm_to_cell_pop}
 \alias{odm_to_cell_pop}
-\title{Converse from ODM to CellPopulation format}
+\title{Convert from ODM to CellPopulation format}
 \usage{
-odm_to_cell_pop(response_odm, gRNA_odm)
+odm_to_cell_pop(response_odm, pert_assignments, guide_to_target_map)
 }
 \arguments{
 \item{response_odm}{ODM for response variable}
 
-\item{gRNA_odm}{ODM for gRNAs}
+\item{pert_assignments}{Character vector of perturbation assignments, one per cell}
 }
 \value{
 An object of type \code{CellPopulation} that the \code{perturbseq} library expects
 }
 \description{
-Converse from ODM to CellPopulation format
+Convert from ODM to CellPopulation format
 }

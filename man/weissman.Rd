@@ -10,9 +10,14 @@ weissman(response_odm, gRNA_odm, response_gRNA_group_pairs)
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
 
-\item{gRNA_odm}{an ODM of gRNA expressions/indicators}
+\item{gRNA_odm}{an ODM of either gRNA expressions (counts) or gRNA
+assignments (logical)}
 
-\item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and \code{gRNA_group} giving the response ID / gRNA group pairs to analyze}
+\item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and
+\code{gRNA_group} giving the response ID / gRNA group pairs to analyze. NOTE: the
+gRNA groups currently are assumed to be singleton groups, specified by their
+gRNA IDs. Adding functionality to support more general gRNA groups is on our
+longer-term to do list.}
 }
 \value{
 a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
@@ -25,13 +30,7 @@ Implements the Weissman method.
 \dontrun{
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
-<<<<<<< HEAD
-response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()),
-gRNA_group = c("GATA1-C", "GATA1-D"))
-result <- mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs)
-=======
 response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
 result <- weissman(response_odm, gRNA_odm, response_gRNA_group_pairs)
->>>>>>> 60d034091f978b25bad7565f507e502ab0b89d9b
 }
 }

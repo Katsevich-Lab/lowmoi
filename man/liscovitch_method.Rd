@@ -9,9 +9,14 @@ liscovitch_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
 
-\item{gRNA_odm}{an ODM of gRNA expressions/indicators}
+\item{gRNA_odm}{an ODM of either gRNA expressions (counts) or gRNA
+assignments (logical)}
 
-\item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and \code{gRNA_group} giving the response ID / gRNA group pairs to analyze}
+\item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and
+\code{gRNA_group} giving the response ID / gRNA group pairs to analyze. NOTE: the
+gRNA groups currently are assumed to be singleton groups, specified by their
+gRNA IDs. Adding functionality to support more general gRNA groups is on our
+longer-term to do list.}
 }
 \value{
 a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.

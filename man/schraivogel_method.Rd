@@ -15,9 +15,14 @@ schraivogel_method(
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
 
-\item{gRNA_odm}{an ODM of gRNA expressions/indicators}
+\item{gRNA_odm}{an ODM of either gRNA expressions (counts) or gRNA
+assignments (logical)}
 
-\item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and \code{gRNA_group} giving the response ID / gRNA group pairs to analyze}
+\item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and
+\code{gRNA_group} giving the response ID / gRNA group pairs to analyze. NOTE: the
+gRNA groups currently are assumed to be singleton groups, specified by their
+gRNA IDs. Adding functionality to support more general gRNA groups is on our
+longer-term to do list.}
 
 \item{gRNA_groups_table}{A table specifying which gRNAs are in which groups, as in \code{sceptre}.
 This argument is optional, and the default assumption is that each gRNA is in its own group.}
@@ -33,10 +38,9 @@ Runs Schraivogel's MAST.cov method.
 }
 \examples{
 \dontrun{
-gene_odm <- load_dataset_modality("frangieh/co_culture/gene")
-gRNA_odm <- load_dataset_modality("frangieh/co_culture/grna")
-response_gRNA_group_pairs <-
-data.frame(response_id = sample(ondisc::get_feature_ids(gene_odm), 500, FALSE),
-gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 500, FALSE))
+response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
+gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
+response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
+result <- weissman(response_odm, gRNA_odm, response_gRNA_group_pairs)
 }
 }

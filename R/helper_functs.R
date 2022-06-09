@@ -87,3 +87,18 @@ get_data_method_ram_matrix_from_small_result <- function(res, p_increase = 1.1) 
 get_sparse_matrix_pieces <- function(csc_mat) {
   list(csc_mat@x, csc_mat@i, csc_mat@p, csc_mat@Dim[1], csc_mat@Dim[2])
 }
+
+
+#' Get the name of a gRNA dataset
+#'
+#' @param dataset_name the name of a dataset in paper/experiment/modality format
+#' @param gRNA_modality the name of the gRNA modality, one of "assignment" or "expression"
+#'
+#' @return the name of the gRNA dataset in paper/experiment/modality format
+#' @export
+#'
+#' @examples
+#' get_gRNA_dataset_name("frangieh/co_culture/gene")
+get_gRNA_dataset_name <- function(dataset_name, gRNA_modality) {
+  paste0(sub('/[^/]*$', '', dataset_name), "/grna_", gRNA_modality)
+}
