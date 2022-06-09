@@ -25,8 +25,14 @@ liscovitch_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs)
   # determine which of the gRNAs are negative controls
   neg_control_gRNAs <- row.names(dplyr::filter(gRNA_odm |> ondisc::get_feature_covariates(),
                                                target_type == "non-targeting"))
-  # assign gRNA IDs to cells via a max operation
-  grna_assignments <- apply(X = grna_data, MARGIN = 2, FUN = function(col) names(which.max(col)))
+  # extract gRNA assignments
+  if(gRNA_odm@ondisc_matrix@logical_mat){
+    grna_assignments <- apply(X = gRNA_mat, MARGIN = 2, FUN = function(col) names(which(col)))
+  } else{
+    # assign gRNA IDs to cells via a max operation
+    grna_assignments <- apply(X = gRNA_mat, MARGIN = 2, FUN = function(col) names(which.max(col)))
+  }
+
   # obtain the indexes of the negative control grnas
   neg_control_idxs <- grna_assignments %in% neg_control_gRNAs
   # cycle through response-gRNA table
