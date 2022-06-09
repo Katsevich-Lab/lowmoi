@@ -8,9 +8,9 @@
 #' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 #' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
 #' response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
-#' result <- weissman(response_odm, gRNA_odm, response_gRNA_group_pairs)
+#' result <- weissman_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
 #' }
-weissman <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
+weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   # extract gRNA info
   if(gRNA_odm@ondisc_matrix@logical_mat){
     # extract gRNA assignments

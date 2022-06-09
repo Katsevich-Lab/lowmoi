@@ -9,13 +9,8 @@ seurat_de <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   gRNA_mat <- load_whole_odm(gRNA_odm)
   gRNA_feature_covariates <- ondisc::get_feature_covariates(gRNA_odm)
   cell_covariates <- ondisc::get_cell_covariates(response_odm)
+  gRNA_assignments <- apply(X = gRNA_mat, MARGIN = 2, FUN = function(col) names(which.max(col)))
 
-  # extract gRNA assignments
-  if(gRNA_odm@ondisc_matrix@logical_mat){
-    gRNA_assignments <- apply(X = gRNA_mat, MARGIN = 2, FUN = function(col) names(which(col)))
-  } else{
-    gRNA_assignments <- apply(X = gRNA_mat, MARGIN = 2, FUN = function(col) names(which.max(col)))
-  }
   cell_metadata <- dplyr::mutate(data.frame(perturbation = gRNA_assignments), cell_covariates)
   seurat_obj <- Seurat::CreateSeuratObject(counts = response_mat,
                                            assay = "RNA", meta.data = cell_metadata)
