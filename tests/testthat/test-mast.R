@@ -7,8 +7,11 @@ test_that("MAST function works", {
   cmd <- paste0("source ~/.research_config; echo $", "LOCAL_SCHRAIVOGEL_2020_DATA_DIR")
   schraivogel_dir <- system(command = cmd, intern = TRUE)
 
+  # NOTE: Want to use processed but not QC'd data for this check, since Schraivogel's
+  # analysis did not include the restriction to one gRNA per cell.
+
   # read the gRNA ODM
-  processed_gRNA_dir <- sprintf("%sprocessed/ground_truth_tapseq/gRNA", schraivogel_dir)
+  processed_gRNA_dir <- sprintf("%sprocessed/ground_truth_tapseq/grna_assignment", schraivogel_dir)
   grna_odm_fp <- sprintf("%s/raw_ungrouped.odm", processed_gRNA_dir)
   grna_metadata_fp <- sprintf("%s/raw_ungrouped_metadata.rds", processed_gRNA_dir)
   grna_odm <- ondisc::read_odm(odm_fp = grna_odm_fp, metadata_fp = grna_metadata_fp)

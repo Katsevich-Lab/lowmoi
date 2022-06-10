@@ -59,7 +59,10 @@ schraivogel_method <- function(response_odm,
 
   # loop over distinct gRNAs present in response_gRNA_group_pairs
   lapply(
-    response_gRNA_group_pairs |> dplyr::pull(gRNA_group) |> unique(),
+    response_gRNA_group_pairs |>
+      dplyr::pull(gRNA_group) |>
+      unique() |>
+      as.character(),
     function(gRNA_group) {
       # call the workhorse function, runSeuratTest
       # Note: runSeuratTest will compute the p-values for a given gRNA against
@@ -83,7 +86,6 @@ schraivogel_method <- function(response_odm,
     dplyr::semi_join(response_gRNA_group_pairs, by = c("response_id", "gRNA_group")) |>
     tibble::as_tibble()
 }
-
 
 #' MAST DE function
 #'
