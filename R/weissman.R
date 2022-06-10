@@ -6,7 +6,7 @@
 #' @examples
 #' \dontrun{
 #' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-#' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
+#' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 #' response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
 #' result <- weissman_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
 #' }
@@ -16,8 +16,7 @@ weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
     # extract gRNA assignments
     pert_assignments <- gRNA_odm |>
       load_whole_odm() |>
-      apply(MARGIN = 2, FUN = function(col) names(which(col))) |>
-      unlist() |>
+      apply(MARGIN = 2, FUN = function(col) names(which.max(col))) |>
       unname()
     # extract gRNA to target map
     guide_to_target_map <- gRNA_odm |>
@@ -62,9 +61,8 @@ weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
 
     # apply the python function ks_compare_pops
     p_vals <- ks_compare_pops(cell_pop_targeting, cell_pop_control)[[2]]
-    stopifnot(all(names(p_vals) == response_vars |> add_ENSG()))
     out_df <- data.frame(
-      response_id = response_vars,
+      response_id = names(p_vals) |> sapply(function(str)(substr(str, 6, nchar(str)))) |> unname(),
       gRNA_group = curr_gRNA,
       p_value = unname(p_vals)
     )
@@ -136,10 +134,6 @@ odm_to_cell_pop <- function(response_odm, pert_assignments, guide_to_target_map)
 #' @return The same set of feature ids with ENSG prefixes added if necessary
 add_ENSG <- function(feature_ids) {
   sapply(feature_ids, function(feature_id) {
-    if (substr(feature_id, start = 0, stop = 4) != "ENSG") {
-      paste0("ENSG_", feature_id)
-    } else {
-      feature_id
-    }
+    paste0("ENSG_", feature_id)
   }) |> unname()
 }
