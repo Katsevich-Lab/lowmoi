@@ -11,6 +11,7 @@
 #'  expand.grid(response_id = sample(ondisc::get_feature_ids(response_odm)),
 #'             gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 2))
 mimosca <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1000) {
+  if (is.character(n_rep))  n_rep <- as.integer(n_rep)
   # load the gene and gRNA data, transposing the matrices (as is required by mimosca)
   response_mat_t <- Matrix::t(load_whole_odm(response_odm))
   response_names <- colnames(response_mat_t)
