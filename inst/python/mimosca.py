@@ -41,19 +41,22 @@ def fit_lm(X, y, l1_ratio=0.5, alpha=0.0005, max_iter=10000, z_score=False):
 
 
 def shuffle_and_fit(X, y, cov_ind, num_iters):
-	# Can pre-allocate "all_nulls" for speed
-	for iter in np.arange(num_iters):
-		X_shuffled = X.copy()
-		X_shuffled[:, cov_ind] = np.random.permutation(X_shuffled[:, cov_ind])
-		lm_coefs = fit_lm(X_shuffled, y)
-
-		if iter == 0:
-			all_nulls = lm_coefs[:, cov_ind].flatten()
-		else:
-			all_nulls = np.append(all_nulls, lm_coefs[:, cov_ind].flatten())
-		del X_shuffled
-
-	return all_nulls
+    np.random.seed(4)
+    for iter in np.arange(num_iters):
+        # print("Iteration " + str(iter) + " of " + str(num_iters))
+        X_shuffled = X.copy()
+        X_shuffled[:, cov_ind] = np.random.permutation(X_shuffled[:, cov_ind])
+        try:
+            lm_coefs = fit_lm(X_shuffled, y)
+        except:
+            print("LM fit failed.")
+        else:
+            if iter == 0:
+                all_nulls = lm_coefs[:, cov_ind].flatten()
+            else:
+                all_nulls = np.append(all_nulls, lm_coefs[:, cov_ind].flatten())
+        del X_shuffled
+    return all_nulls
 
 
 def calc_p_vals(beta_mat, null_distrib, cov_ind):
