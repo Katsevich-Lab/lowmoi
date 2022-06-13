@@ -4,10 +4,12 @@
 \alias{load_whole_odm}
 \title{Load whole odm}
 \usage{
-load_whole_odm(odm)
+load_whole_odm(odm, csc_format = TRUE)
 }
 \arguments{
 \item{odm}{an ondisc_matrix object}
+
+\item{csc_format}{load in cell-accessible, CSC format (TRUE) or feature-accessible, CSR format (FALSE)?}
 }
 \value{
 an in-memory matrix

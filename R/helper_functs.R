@@ -3,13 +3,14 @@
 #' Loads data from disk into memory by cell.
 #'
 #' @param odm an ondisc_matrix object
+#' @param csc_format load in cell-accessible, CSC format (TRUE) or feature-accessible, CSR format (FALSE)?
 #'
 #' @return an in-memory matrix
 #' @export
-load_whole_odm <- function(odm) {
+load_whole_odm <- function(odm, csc_format = TRUE) {
   x <- odm@ondisc_matrix
   x_dim <- dim(x)
-  index_on_cell <- TRUE
+  index_on_cell <- csc_format
   subset_vector <- ondisc:::get_subset_vector(x, index_on_cell)
   if (identical(subset_vector, NA_integer_)) {
     subset_vector <- seq(1, if (index_on_cell) x_dim[2] else x_dim[1])
