@@ -103,3 +103,38 @@ get_sparse_matrix_pieces <- function(csc_mat) {
 get_gRNA_dataset_name <- function(dataset_name, gRNA_modality) {
   paste0(sub('/[^/]*$', '', dataset_name), "/grna_", gRNA_modality)
 }
+
+
+#' Get undercover groups
+#'
+#' Produce a list of undercover groups given a list of NTCs.
+#'
+#' @param ntc_names a vector of NTC names
+#' @param group_size size of the undercover groups
+#' @param partition_count number of undercover groups to generate
+#'
+#' @return a vector of comma-separated undercover groups
+#' @export
+get_undercover_groups <- function(ntc_names, group_size, partition_count) {
+  set.seed(4)
+  n_ntcs <- length(ntc_names)
+  total_possible_paritions <- choose(n_ntcs, group_size)
+  if (partition_count > total_possible_paritions) stop("partition_count exceeds the total number of possible partitions.")
+  my_undercover_groups <- character()
+  ntc_names_copy <- ntc_names
+  repeat {
+    while (length(ntc_names_copy) >= group_size) {
+      curr_grp <- sample(x = ntc_names_copy,
+                         size = group_size,
+                         replace = FALSE)
+      curr_grp_string <- curr_grp |> sort() |> paste0(collapse = ",")
+      if (!(curr_grp_string %in% my_undercover_groups)) {
+        my_undercover_groups <- c(my_undercover_groups, curr_grp_string)
+      }
+      ntc_names_copy <- ntc_names_copy[!(ntc_names_copy %in% curr_grp)]
+    }
+    if (length (my_undercover_groups) >= partition_count) break()
+    ntc_names_copy <- ntc_names
+  }
+  return(my_undercover_groups[seq(1, partition_count)])
+}

@@ -66,7 +66,7 @@ permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, 
 
 #' Abstract two sample test
 #'
-#' An abstract a two-sample test. Pass function `two_sample_test` to carry out a specific two-sample test (e.g., a t-test or a permutation test).
+#' An abstract a two-sample test. Pass function `two_sample_test` to carry out a given two-sample test (e.g., a t-test or a permutation test).
 #'
 #' @inherit abstract_interface
 #' @param two_sample_test a two-sample test; should take as arguments (i) vector of expressions of target cells, (ii) vector of expressions of control cells, (iii) the indices of cells receiving the targeting gRNA, and (iv) the indices of the cells receiving the NT gRNAs.
