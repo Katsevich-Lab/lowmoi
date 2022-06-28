@@ -138,3 +138,37 @@ get_undercover_groups <- function(ntc_names, group_size, partition_count) {
   }
   return(my_undercover_groups[seq(1, partition_count)])
 }
+
+
+#' Get gRNA assignments via max operation
+#'
+#' @param gRNA_odm a gRNA ODM;
+#'
+#' @return a vector of gRNA IDs obtained by applying a column-wise max operation to the gRNA ODM.
+get_gRNA_assignments_via_max_op <- function(gRNA_odm) {
+  ret <- gRNA_odm |>
+    load_whole_odm() |>
+    apply(MARGIN = 2, FUN = function(col) names(which.max(col))) |>
+    unname()
+  return(ret)
+}
+
+
+#' Get target assignments via max operation
+#'
+#' @param gRNA_odm a gRNA ODM
+#'
+#' @return a vector of "targets" obtained by applying a column-wise max operation to the gRNA ODM;
+#' the target is present as a column of the feature covariate matrix of the gRNA ODM.
+#' @export
+#'
+#' @examples
+#' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
+#' get_target_assignments_via_max_op(gRNA_odm)
+get_target_assignments_via_max_op <- function(gRNA_odm) {
+  gRNA_feature_covariates <- gRNA_odm |> ondisc::get_feature_covariates()
+  gRNA_to_target_map <- setNames(row.names(gRNA_feature_covariates), gRNA_feature_covariates$target)
+  gRNA_assignments <- get_gRNA_assignments_via_max_op(gRNA_odm)
+  gRNA_targets <- names(gRNA_to_target_map)[match(x = gRNA_assignments, table = gRNA_to_target_map)]
+  return(gRNA_targets)
+}
