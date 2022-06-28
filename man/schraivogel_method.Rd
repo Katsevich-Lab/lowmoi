@@ -19,10 +19,7 @@ schraivogel_method(
 assignments (logical)}
 
 \item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and
-\code{gRNA_group} giving the response ID / gRNA group pairs to analyze. NOTE: the
-gRNA groups currently are assumed to be singleton groups, specified by their
-gRNA IDs. Adding functionality to support more general gRNA groups is on our
-longer-term to do list.}
+\code{gRNA_group} giving the response ID / gRNA group pairs to analyze.}
 
 \item{gRNA_groups_table}{A table specifying which gRNAs are in which groups, as in \code{sceptre}.
 This argument is optional, and the default assumption is that each gRNA is in its own group.}
@@ -35,6 +32,13 @@ a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_val
 }
 \description{
 Runs Schraivogel's MAST.cov method.
+}
+\details{
+The \code{gRNA_group} column of \code{response_gRNA_group_pairs} contains the names of gRNA groups.
+These gRNA groups are assumed to be present in the \code{target} column of the feature
+covariate matrix of \code{gRNA_odm}. This column should contain entries "non-targeting"
+indicating the non-targeting gRNAs. If \code{target_type} is present as a column of the
+feature covariate matrix of \code{gRNA_odm}, \code{target_type} is ignored.
 }
 \examples{
 \dontrun{

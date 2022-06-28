@@ -13,10 +13,7 @@ seurat_de(response_odm, gRNA_odm, response_gRNA_group_pairs)
 assignments (logical)}
 
 \item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and
-\code{gRNA_group} giving the response ID / gRNA group pairs to analyze. NOTE: the
-gRNA groups currently are assumed to be singleton groups, specified by their
-gRNA IDs. Adding functionality to support more general gRNA groups is on our
-longer-term to do list.}
+\code{gRNA_group} giving the response ID / gRNA group pairs to analyze.}
 }
 \value{
 a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
@@ -24,12 +21,19 @@ a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_val
 \description{
 Implements the Seurat differential expression method.
 }
+\details{
+The \code{gRNA_group} column of \code{response_gRNA_group_pairs} contains the names of gRNA groups.
+These gRNA groups are assumed to be present in the \code{target} column of the feature
+covariate matrix of \code{gRNA_odm}. This column should contain entries "non-targeting"
+indicating the non-targeting gRNAs. If \code{target_type} is present as a column of the
+feature covariate matrix of \code{gRNA_odm}, \code{target_type} is ignored.
+}
 \examples{
 \dontrun{
-response_odm <- load_dataset_modality("frangieh/co_culture/gene")
-gRNA_odm <- load_dataset_modality("frangieh/co_culture/grna_assignment")
+response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
+gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 response_gRNA_group_pairs <-
-data.frame(response_id = sample(ondisc::get_feature_ids(gene_odm), 500, FALSE),
-gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 500, FALSE))
+ expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
+             response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 }
 }
