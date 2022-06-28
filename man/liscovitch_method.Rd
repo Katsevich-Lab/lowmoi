@@ -31,9 +31,9 @@ feature covariate matrix of \code{gRNA_odm}, \code{target_type} is ignored.
 \examples{
 \dontrun{
 response_odm <- load_dataset_modality("liscovitch/experiment_small/chromatin")
-gRNA_odm <- load_dataset_modality("liscovitch/experiment_small/grna")
+gRNA_odm <- load_dataset_modality("liscovitch/experiment_small/grna_assignment")
 response_gRNA_group_pairs <- expand.grid(response_id = response_odm |> ondisc::get_feature_ids(),
-gRNA_group = (gRNA_odm |> ondisc::get_feature_ids())[1:2])
+gRNA_group = c("ARID1A", "ATRX"))
 res <- liscovitch_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
 }
 }
