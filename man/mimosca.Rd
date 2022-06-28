@@ -5,7 +5,7 @@
 \title{Mimosca
 Implements the MIMOSCA method.}
 \usage{
-mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1000)
+mimosca(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 50)
 }
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}

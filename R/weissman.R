@@ -11,8 +11,8 @@
 #' result <- weissman_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
 #' }
 weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
-  # extract gRNA info
-  if(gRNA_odm@ondisc_matrix@logical_mat){
+  # obtain the cell-to-target assignments
+  if (gRNA_odm@ondisc_matrix@logical_mat) {
     # extract gRNA assignments
     pert_assignments <- gRNA_odm |>
       load_whole_odm() |>

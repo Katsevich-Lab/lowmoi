@@ -5,17 +5,10 @@
 #' @inherit abstract_interface
 #' @param gRNA_groups_table A table specifying which gRNAs are in which groups, as in \code{sceptre}.
 #' This argument is optional, and the default assumption is that each gRNA is in its own group.
-#' @param gRNA_threshold A threshold for gRNA expression. This argument is optional, and defaults to 8,
+#' @param gRNA_threshold A threshold for gRNA expression. This argument is optional and defaults to 8,
 #' which was Schraivogel et al's choice.
 #'
 #' @export
-#' @examples
-#' \dontrun{
-#' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-#' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
-#' response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
-#' result <- weissman(response_odm, gRNA_odm, response_gRNA_group_pairs)
-#' }
 schraivogel_method <- function(response_odm,
                                gRNA_odm,
                                response_gRNA_group_pairs,
