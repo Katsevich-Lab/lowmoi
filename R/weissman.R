@@ -112,7 +112,7 @@ odm_to_cell_pop <- function(response_odm, guide_targets) {
 #'
 #' This is somewhat of a hack needed for compatibility with perturbseq code.
 #'
-#' @param feature_id Vector of feature ids
+#' @param feature_ids Vector of feature ids
 #'
 #' @return The same set of feature ids with ENSG prefixes added if necessary
 add_ENSG <- function(feature_ids) {

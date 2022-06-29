@@ -7,7 +7,7 @@ nb_regression <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   # obtain cell covariate data frame
   cell_covariate_df <- response_odm |> ondisc::get_cell_covariates()
   my_formula_str <- response_odm@misc$nb_regression_formula
-  my_formula <- as.formula(paste0("expression ", my_formula_str, " + pert_indicator"))
+  my_formula <- stats::as.formula(paste0("expression ", my_formula_str, " + pert_indicator"))
 
   # define the NB regression test function
   two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices) {

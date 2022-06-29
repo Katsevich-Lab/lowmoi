@@ -1,6 +1,7 @@
 utils::globalVariables(c("NTC", "Pr(>Chisq)", "ci.hi", "ci.lo", "ci_high", "ci_low", "coef", "component", "contrast",
                          "gRNA_group", "gene", "response_id", "guide", "logFC", "p_val", "p_value", "primerid", "pvalue",
-                         "target_type", "n_nonzero", "n_umis", "dataset", "method", "max_ram", "n_fragments", ".get_config_path", "n_rep"))
+                         "target_type", "n_nonzero", "n_umis", "dataset", "method", "max_ram", "n_fragments", ".get_config_path", "n_rep",
+                         "expressions", "target", "batch", "gem_group", "cell_barcode", "UMI_count", "guide_target"))
 
 #' Abstract method interface
 #'

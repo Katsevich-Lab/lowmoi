@@ -7,7 +7,7 @@
 add_ENSG(feature_ids)
 }
 \arguments{
-\item{feature_id}{Vector of feature ids}
+\item{feature_ids}{Vector of feature ids}
 }
 \value{
 The same set of feature ids with ENSG prefixes added if necessary
