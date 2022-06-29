@@ -3,32 +3,16 @@
 #'
 #' @inherit abstract_interface
 #' @export
-#' @examples
-#' \dontrun{
-#' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-#' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
-#' response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
-#' result <- weissman_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
-#' }
 weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   # obtain the cell-to-target assignments
   if (gRNA_odm@ondisc_matrix@logical_mat) {
-    # extract gRNA assignments
-    pert_assignments <- gRNA_odm |>
-      load_whole_odm() |>
-      apply(MARGIN = 2, FUN = function(col) names(which.max(col))) |>
-      unname()
-    # extract gRNA to target map
-    guide_to_target_map <- gRNA_odm |>
-      ondisc::get_feature_covariates() |>
-      tibble::rownames_to_column(var = "guide_identity") |>
-      dplyr::select(guide_identity, target)
+    guide_targets <- get_target_assignments_via_max_op(gRNA_odm)
   } else{
     stop("The Weissman gRNA assignment method is not currently implemented.")
   }
 
   # convert to CellPopulation format
-  cell_pop <- odm_to_cell_pop(response_odm, pert_assignments, guide_to_target_map)
+  cell_pop <- odm_to_cell_pop(response_odm, guide_targets)
 
   # normalize data
   cell_pop$normalized_matrix <- normalize_to_gemgroup_control(
@@ -37,17 +21,17 @@ weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   )
 
   # apply Weissman method
-  unique_gRNAs <- as.character(unique(response_gRNA_group_pairs$gRNA_group))
-  res_list <- lapply(unique_gRNAs, function(curr_gRNA) {
+  unique_gRNA_groups <- as.character(unique(response_gRNA_group_pairs$gRNA_group))
+  res_list <- lapply(unique_gRNA_groups, function(curr_gRNA_group) {
     # find responses to test this gRNA against
     response_vars <- response_gRNA_group_pairs |>
-      dplyr::filter(gRNA_group == curr_gRNA) |>
+      dplyr::filter(gRNA_group == curr_gRNA_group) |>
       dplyr::pull(response_id) |>
       as.character()
 
     # get normalized matrix for cells with this gRNA and genes to test against
     cell_pop_targeting <- cell_pop$where(
-      cells = sprintf('guide_identity == \"%s\"', curr_gRNA),
+      cells = sprintf('guide_target == \"%s\"', curr_gRNA_group),
       genes = response_vars |> add_ENSG(),
       normalized = TRUE
     )
@@ -63,7 +47,7 @@ weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
     p_vals <- ks_compare_pops(cell_pop_targeting, cell_pop_control)[[2]]
     out_df <- data.frame(
       response_id = names(p_vals) |> sapply(function(str)(substr(str, 6, nchar(str)))) |> unname(),
-      gRNA_group = curr_gRNA,
+      gRNA_group = curr_gRNA_group,
       p_value = unname(p_vals)
     )
     out_df
@@ -78,10 +62,10 @@ weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
 #' Convert from ODM to CellPopulation format
 #'
 #' @param response_odm ODM for response variable
-#' @param pert_assignments Character vector of perturbation assignments, one per cell
+#' @param guide_targets Character vector of perturbation assignments, one per cell
 #'
 #' @return An object of type `CellPopulation` that the `perturbseq` library expects
-odm_to_cell_pop <- function(response_odm, pert_assignments, guide_to_target_map) {
+odm_to_cell_pop <- function(response_odm, guide_targets) {
   # load the data, transposing the matrices
   response_mat_t <- response_odm |>
     load_whole_odm() |>
@@ -105,16 +89,15 @@ odm_to_cell_pop <- function(response_odm, pert_assignments, guide_to_target_map)
   # create cells_df for input to CellPopulation constructor
   cells_df <- ondisc::get_cell_covariates(response_odm) |>
     tibble::rownames_to_column(var = "cell_barcode") |>
-    dplyr::mutate(guide_identity = pert_assignments) # add gRNA assignments
+    dplyr::mutate(guide_target = guide_targets) # add gRNA assignments
   if (!("batch" %in% names(cells_df))) {
     cells_df$batch <- 1 # add batch information if it is not present
   }
-  # join with guide_to_target_map
+  # # join with guide_to_target_map
   cells_df <- cells_df |>
-    dplyr::left_join(guide_to_target_map, by = "guide_identity") |>
-    dplyr::rename(UMI_count = n_umis, gem_group = batch, guide_target = target) |>
+    dplyr::rename(UMI_count = n_umis, gem_group = batch) |>
     dplyr::mutate(gem_group = as.integer(as.factor(gem_group))) |>
-    dplyr::select(cell_barcode, UMI_count, gem_group, guide_identity, guide_target) |>
+    dplyr::select(cell_barcode, UMI_count, gem_group, guide_target) |>
     tibble::column_to_rownames(var = "cell_barcode")
 
   # construct and return the CellPopulation object expected by perturbseq software
