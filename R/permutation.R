@@ -4,56 +4,32 @@
 #'
 #' @inherit abstract_interface
 #' @param n_rep number of permutation replicates
-#'
-#' @return
 #' @export
-#'
-#' @examples
-#' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-#' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
-#' response_gRNA_group_pairs <-
-#'  expand.grid(response_id = sample(ondisc::get_feature_ids(response_odm)),
-#'             gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 2))
-#' res <- permutation_test(response_odm, gRNA_odm, response_gRNA_group_pairs)
-permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 100) {
+permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1000) {
   # convert n_rep to integer type (if necessary)
   if (is.character(n_rep)) n_rep <- as.integer(n_rep)
 
   # obtain the library sizes
-  cell_covariates <- response_odm |> ondisc::get_cell_covariates()
-  lib_size_cov <- if ("n_umis" %in% colnames(cell_covariates)) {
-    "n_umis"
-  } else if ("n_fragments" %in% colnames(cell_covariates)) {
-    "n_fragments"
-  } else {
-    stop("Neither n_umis nor n_fragments are columns of the cell covariates matrix of response_odm.")
-  }
-  lib_sizes <- cell_covariates[[lib_size_cov]]
+  lib_sizes <- get_library_sizes(response_odm)
 
   # define the permutation test function
   two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices) {
-    # create the data frame to pass to GLM
     target_cell_sizes <- lib_sizes[target_cell_indices]
     control_cell_sizes <- lib_sizes[control_cell_indices]
+
+    # create data frame for permutation
     df <- data.frame(exp = c(target_cells, control_cells),
-                     lab = c(rep(1, length(target_cells)), rep(0, length(control_cells))),
-                     lg_lib_size = log(c(target_cell_sizes, control_cell_sizes)))
+                     pert_indicator = c(rep(1, length(target_cells)), rep(0, length(control_cells))),
+                     lib_size = (c(target_cell_sizes, control_cell_sizes)))
 
-    # ground truth test stat
-    fit_star <- glm(formula = exp ~ lab + offset(lg_lib_size), family = poisson(), data = df)
-    beta_star <- coef(fit_star)[["lab"]]
+    # compute beta on ground truth data
+    beta_star <- compute_log_fold_change(df)
 
-    # resampled test stats
+    # compute permuted test statistics
     beta_null <- replicate(n = n_rep, expr = {
-      df$lab <- sample(df$lab)
-      tryCatch({
-        fit_null <- glm(formula = exp ~ lab + offset(lg_lib_size), family = poisson(), data = df)
-        coef(fit_null)[["lab"]]
-      },
-      error = function(cond) NULL,
-      warning = function(cond) NULL)
-    }, simplify = TRUE)
-
+      df$pert_indicator <- sample(df$pert_indicator)
+      compute_log_fold_change(df)
+    })
     p_val <- mean(c(Inf, abs(beta_null)) >= abs(beta_star))
     return(p_val)
   }
@@ -61,6 +37,20 @@ permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, 
   # run the permutation test
   res <- abstract_two_sample_test(response_odm, gRNA_odm, response_gRNA_group_pairs, two_sample_test)
   return(res)
+}
+
+
+compute_log_fold_change <- function(df) {
+  target_cell_idxs <- df$pert_indicator == 1
+  control_cell_idxs <- df$pert_indicator == 0
+
+  target_cells <- df$exp[target_cell_idxs]
+  target_cell_sizes <- df$lib_size[target_cell_idxs]
+  control_cells <- df$exp[control_cell_idxs]
+  control_cell_sizes <- df$lib_size[control_cell_idxs]
+
+  beta_1 <- log(sum(target_cells)/sum(target_cell_sizes)) - log(sum(control_cells)/sum(control_cell_sizes))
+  return(beta_1)
 }
 
 
@@ -76,30 +66,25 @@ permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, 
 #' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 #' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 #' response_gRNA_group_pairs <-
-#'  expand.grid(response_id = sample(ondisc::get_feature_ids(response_odm)),
-#'              gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 2))
+#'  expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
+#'              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 #' abstract_two_sample_test(response_odm, gRNA_odm, response_gRNA_group_pairs, two_sample_test)
 abstract_two_sample_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, two_sample_test) {
-  # load data
+  # load response data
   response_mat <- load_whole_odm(response_odm, FALSE)
-  response_ids <- row.names(response_mat)
-  gRNA_mat <- load_whole_odm(gRNA_odm, FALSE)
-  # assign gRNAs to cells
-  gRNA_assignments <- apply(X = gRNA_mat, MARGIN = 2, FUN = function(col) names(which.max(col)))
-  # obtain the indices of the NT cells
-  neg_control_gRNAs <- row.names(dplyr::filter(gRNA_odm |> ondisc::get_feature_covariates(),
-                                               target_type == "non-targeting"))
-  control_cell_indices <- gRNA_assignments %in% neg_control_gRNAs
+
+  # get gRNA assignments and target assignments; obtain indices of NT cells
+  gRNA_targets <- get_target_assignments_via_max_op(gRNA_odm)
+  control_cell_indices <- which(gRNA_targets == "non-targeting")
 
   # loop through the pairs, calculating a p-value for each
   p_vals <- apply(X = response_gRNA_group_pairs, MARGIN = 1, FUN = function(r) {
     gRNA_id <- as.character(r[["gRNA_group"]])
-    target_cell_indices <- gRNA_assignments == gRNA_id
+    target_cell_indices <- gRNA_targets == gRNA_id
     response_id <- as.character(r[["response_id"]])
-    print(paste0("Testing ", response_id, " against ", gRNA_id))
     # get the target and control cells
-    target_cells <- response_mat[response_id, target_cell_indices]
-    control_cells <- response_mat[response_id, control_cell_indices]
+    target_cells <- response_mat[response_id, target_cell_indices] |> unname()
+    control_cells <- response_mat[response_id, control_cell_indices] |> unname()
     two_sample_test(target_cells, control_cells, target_cell_indices, control_cell_indices)
   })
   response_gRNA_group_pairs$p_value <- p_vals

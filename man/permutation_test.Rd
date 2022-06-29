@@ -8,7 +8,7 @@ permutation_test(
   response_odm,
   gRNA_odm,
   response_gRNA_group_pairs,
-  n_rep = 100
+  n_rep = 1000
 )
 }
 \arguments{
@@ -23,7 +23,7 @@ assignments (logical)}
 \item{n_rep}{number of permutation replicates}
 }
 \value{
-
+a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
 }
 \description{
 Runs a marginal permutation test using a Possion GLM test statistic.
@@ -36,10 +36,11 @@ indicating the non-targeting gRNAs. If \code{target_type} is present as a column
 feature covariate matrix of \code{gRNA_odm}, \code{target_type} is ignored.
 }
 \examples{
+\dontrun{
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 response_gRNA_group_pairs <-
- expand.grid(response_id = sample(ondisc::get_feature_ids(response_odm)),
-            gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 2))
-res <- permutation_test(response_odm, gRNA_odm, response_gRNA_group_pairs)
+ expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
+             response_id = sample(ondisc::get_feature_ids(response_odm), 50))
+}
 }

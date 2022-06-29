@@ -172,3 +172,23 @@ get_target_assignments_via_max_op <- function(gRNA_odm) {
   gRNA_targets <- names(gRNA_to_target_map)[match(x = gRNA_assignments, table = gRNA_to_target_map)]
   return(gRNA_targets)
 }
+
+
+#' Get library sizes
+#'
+#' Gets the cell-wise library sizes from a response ODM (either "n_umis" or "n_fragments", as appropriate)
+#'
+#' @param response_odm a response ODM
+#'
+#' @return a vector of cell library sizes
+get_library_sizes <- function(response_odm) {
+  cell_covariates <- response_odm |> ondisc::get_cell_covariates()
+  lib_size_cov <- if ("n_umis" %in% colnames(cell_covariates)) {
+    "n_umis"
+  } else if ("n_fragments" %in% colnames(cell_covariates)) {
+    "n_fragments"
+  } else {
+    stop("Neither n_umis nor n_fragments are columns of the cell covariates matrix of response_odm.")
+  }
+  cell_covariates[[lib_size_cov]]
+}

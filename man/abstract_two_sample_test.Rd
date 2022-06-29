@@ -40,7 +40,7 @@ two_sample_test <- function(target_cells, control_cells, response_id, target_cel
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 response_gRNA_group_pairs <-
- expand.grid(response_id = sample(ondisc::get_feature_ids(response_odm)),
-             gRNA_group = sample(ondisc::get_feature_ids(gRNA_odm), 2))
+ expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
+             response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 abstract_two_sample_test(response_odm, gRNA_odm, response_gRNA_group_pairs, two_sample_test)
 }
