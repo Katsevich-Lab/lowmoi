@@ -8,7 +8,6 @@ schraivogel_method(
   response_odm,
   gRNA_odm,
   response_gRNA_group_pairs,
-  gRNA_groups_table = NULL,
   gRNA_threshold = 8
 )
 }
@@ -20,9 +19,6 @@ assignments (logical)}
 
 \item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and
 \code{gRNA_group} giving the response ID / gRNA group pairs to analyze.}
-
-\item{gRNA_groups_table}{A table specifying which gRNAs are in which groups, as in \code{sceptre}.
-This argument is optional, and the default assumption is that each gRNA is in its own group.}
 
 \item{gRNA_threshold}{A threshold for gRNA expression. This argument is optional and defaults to 8,
 which was Schraivogel et al's choice.}
@@ -44,7 +40,8 @@ feature covariate matrix of \code{gRNA_odm}, \code{target_type} is ignored.
 \dontrun{
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
-response_gRNA_group_pairs <- expand.grid(response_id = (response_odm |> ondisc::get_feature_ids()), gRNA_group = c("GATA1-C", "GATA1-D"))
-result <- schraivogel_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
+response_gRNA_group_pairs <-
+ expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
+             response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 }
 }

@@ -22,21 +22,30 @@ test_that("MAST function works", {
   gene_metadata_fp <- sprintf("%s/metadata.rds", processed_gene_dir)
   gene_odm <- ondisc::read_odm(odm_fp = gene_odm_fp, metadata_fp = gene_metadata_fp)
 
-  # choose a set of gRNAs to test, and pair them with all genes
-  guides <- reported_results |>
+  # choose a gRNA to test, and pair it with all genes
+  guide <- reported_results |>
     dplyr::pull(guide) |>
     unique() |>
     sample(size = 1)
   gene_gRNA_group_pairs <- reported_results |>
     dplyr::select(gene, guide) |>
     dplyr::rename(response_id = gene, gRNA_group = guide) |>
-    dplyr::filter(gRNA_group %in% guides) |>
+    dplyr::filter(gRNA_group == !!guide) |>
     tibble::as_tibble()
+
+  # modify gRNA ODM to change target of selected gRNA
+  new_targets <- grna_odm |>
+    ondisc::get_feature_covariates() |>
+    tibble::rownames_to_column(var = "guide") |>
+    dplyr::mutate(target = ifelse(guide == !!guide, guide, target)) |>
+    dplyr::pull(target)
+  grna_odm_modified <- grna_odm |>
+    ondisc::mutate_feature_covariates(target = new_targets)
 
   # compute the results based on the schraivogel_method function
   computed_results <- schraivogel_method(
     gene_odm,
-    grna_odm,
+    grna_odm_modified,
     gene_gRNA_group_pairs
   )
 

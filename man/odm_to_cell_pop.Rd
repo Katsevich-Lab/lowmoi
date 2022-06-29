@@ -4,12 +4,12 @@
 \alias{odm_to_cell_pop}
 \title{Convert from ODM to CellPopulation format}
 \usage{
-odm_to_cell_pop(response_odm, pert_assignments, guide_to_target_map)
+odm_to_cell_pop(response_odm, guide_targets)
 }
 \arguments{
 \item{response_odm}{ODM for response variable}
 
-\item{pert_assignments}{Character vector of perturbation assignments, one per cell}
+\item{guide_targets}{Character vector of perturbation assignments, one per cell}
 }
 \value{
 An object of type \code{CellPopulation} that the \code{perturbseq} library expects

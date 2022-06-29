@@ -3,8 +3,6 @@
 #' Runs Schraivogel's MAST.cov method.
 #'
 #' @inherit abstract_interface
-#' @param gRNA_groups_table A table specifying which gRNAs are in which groups, as in \code{sceptre}.
-#' This argument is optional, and the default assumption is that each gRNA is in its own group.
 #' @param gRNA_threshold A threshold for gRNA expression. This argument is optional and defaults to 8,
 #' which was Schraivogel et al's choice.
 #'
@@ -18,26 +16,6 @@ schraivogel_method <- function(response_odm,
   grna_data <- load_whole_odm(gRNA_odm)
   gene_data <- load_whole_odm(response_odm)
 
-  # # threshold the gRNA matrix, unless it is already binary
-  # if (!gRNA_odm@ondisc_matrix@logical_mat) {
-  #   perturbation_matrix <- sceptre::threshold_gRNA_matrix(grna_data, threshold = gRNA_threshold)
-  # } else {
-  #   perturbation_matrix <- grna_data
-  # }
-  #
-  # # combine the perturbation indicators within each gRNA group, unless gRNA_groups_table is not given
-  # if (!is.null(gRNA_groups_table)) {
-  #   combined_perturbation_matrix <- sceptre::combine_perturbations(
-  #     perturbation_matrix = perturbation_matrix,
-  #     gRNA_groups_table = gRNA_groups_table
-  #   )
-  # } else {
-  #   combined_perturbation_matrix <- perturbation_matrix
-  # }
-
-  # # transpose the perturbation matrix, as this is what the runSeuratTest function requires
-  # combined_pert_mat_t = combined_perturbation_matrix |> Matrix::t()
-
   # load the GROUPED gRNA matrix into memory; transpose
   all_targets <- gRNA_odm |> ondisc::get_feature_covariates() |> dplyr::pull(target) |> unique()
   combined_pert_mat_t <- ondisc::load_thresholded_and_grouped_gRNA(covariate_odm = gRNA_odm,
@@ -45,14 +23,8 @@ schraivogel_method <- function(response_odm,
                                                           gRNA_group_name = "target",
                                                           threshold = gRNA_threshold) |> t()
 
-  scramble.cols <- which(colnames(gRNA_mat_t) == "non-targeting")
-
   # # identify which of the gRNAs are negative controls
-  # scramble.cols <- gRNA_odm |>
-  #   ondisc::get_feature_covariates() |>
-  #   dplyr::mutate(NTC = target_type == "non-targeting") |>
-  #   dplyr::pull(NTC) |>
-  #   which()
+  scramble.cols <- which(colnames(combined_pert_mat_t) == "non-targeting")
 
   # compute the number of genes expressed in each cell, which is the covariate that
   # this method adjusts for
