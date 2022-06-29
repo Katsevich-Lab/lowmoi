@@ -87,6 +87,7 @@ abstract_two_sample_test <- function(response_odm, gRNA_odm, response_gRNA_group
     gRNA_group <- as.character(r[["gRNA_group"]])
     target_cell_indices <- gRNA_targets == gRNA_group
     response_id <- as.character(r[["response_id"]])
+    print(paste0("Analyzing ", response_id, " and ", gRNA_group))
     # get the target and control cells
     target_cells <- response_mat[response_id, target_cell_indices] |> unname()
     control_cells <- response_mat[response_id, control_cell_indices] |> unname()

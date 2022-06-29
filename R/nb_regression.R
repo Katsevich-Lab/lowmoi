@@ -3,6 +3,7 @@
 #' Implements a negative binomial regression.
 #'
 #' @inherit abstract_interface
+#' @export
 nb_regression <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   # obtain cell covariate data frame
   cell_covariate_df <- response_odm |> ondisc::get_cell_covariates()
@@ -19,7 +20,7 @@ nb_regression <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
     df <- cbind(df_left, df_right)
 
     # first, use aux function to estimate size
-    est_size <- estimate_size(df, my_formula)
+    est_size <- max(estimate_size(df, my_formula), 0.01)
 
     # fit GLM
     fit_nb <- VGAM::vglm(formula = my_formula, family = VGAM::negbinomial.size(est_size), data = df)
@@ -39,7 +40,7 @@ nb_regression <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
 estimate_size <- function(df, formula) {
   # second backup: method of moments on Poisson residuals
   backup_2 <- function(pois_fit) {
-    MASS::theta.mm(y = expressions, mu = pois_fit$fitted.values, dfr = pois_fit$df.residual)
+    MASS::theta.mm(y = df[["expression"]], mu = pois_fit$fitted.values, dfr = pois_fit$df.residual)
   }
 
   # first backup: MLE on poisson residuals
