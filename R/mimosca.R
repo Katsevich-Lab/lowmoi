@@ -20,8 +20,8 @@ mimosca <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 5
   # obtain the dataset-specific confounder model matrix, and construct the design matrix
   form <- response_odm@misc$mimosca_formula
   cell_cov_mat <- response_odm |> ondisc::get_cell_covariates()
-  confounder_mat <- model.matrix(object = form, data = cell_cov_mat)
-  confounder_mat <- as(confounder_mat, "dgCMatrix")
+  confounder_mat <- stats::model.matrix(object = form, data = cell_cov_mat)
+  confounder_mat <- methods::as(confounder_mat, "dgCMatrix")
   design_mat <- cbind(gRNA_mat_t, confounder_mat)
 
   # apply mimosca, looping over unique gRNA groups

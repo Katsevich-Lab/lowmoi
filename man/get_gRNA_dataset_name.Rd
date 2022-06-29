@@ -17,6 +17,3 @@ the name of the gRNA dataset in paper/experiment/modality format
 \description{
 Get the name of a gRNA dataset
 }
-\examples{
-get_gRNA_dataset_name("frangieh/co_culture/gene")
-}

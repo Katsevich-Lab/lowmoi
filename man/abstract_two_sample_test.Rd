@@ -36,11 +36,16 @@ indicating the non-targeting gRNAs. If \code{target_type} is present as a column
 feature covariate matrix of \code{gRNA_odm}, \code{target_type} is ignored.
 }
 \examples{
-two_sample_test <- function(target_cells, control_cells, response_id, target_cell_indices, control_cell_indices) t.test(target_cells, control_cells)$p.value
+\dontrun{
+two_sample_test <- function(target_cells, control_cells, response_id,
+target_cell_indices, control_cell_indices) {
+t.test(target_cells, control_cells)$p.value
+}
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 response_gRNA_group_pairs <-
  expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 abstract_two_sample_test(response_odm, gRNA_odm, response_gRNA_group_pairs, two_sample_test)
+}
 }

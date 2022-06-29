@@ -97,9 +97,6 @@ get_sparse_matrix_pieces <- function(csc_mat) {
 #'
 #' @return the name of the gRNA dataset in paper/experiment/modality format
 #' @export
-#'
-#' @examples
-#' get_gRNA_dataset_name("frangieh/co_culture/gene")
 get_gRNA_dataset_name <- function(dataset_name, gRNA_modality) {
   paste0(sub('/[^/]*$', '', dataset_name), "/grna_", gRNA_modality)
 }
@@ -163,11 +160,13 @@ get_gRNA_assignments_via_max_op <- function(gRNA_odm) {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 #' get_target_assignments_via_max_op(gRNA_odm)
+#' }
 get_target_assignments_via_max_op <- function(gRNA_odm) {
   gRNA_feature_covariates <- gRNA_odm |> ondisc::get_feature_covariates()
-  gRNA_to_target_map <- setNames(row.names(gRNA_feature_covariates), gRNA_feature_covariates$target)
+  gRNA_to_target_map <- stats::setNames(row.names(gRNA_feature_covariates), gRNA_feature_covariates$target)
   gRNA_assignments <- get_gRNA_assignments_via_max_op(gRNA_odm)
   gRNA_targets <- names(gRNA_to_target_map)[match(x = gRNA_assignments, table = gRNA_to_target_map)]
   return(gRNA_targets)

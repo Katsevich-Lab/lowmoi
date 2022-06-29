@@ -5,7 +5,7 @@
 #' @inherit abstract_interface
 #' @param n_rep number of permutation replicates
 #' @export
-permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1000) {
+permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 10000) {
   # convert n_rep to integer type (if necessary)
   if (is.character(n_rep)) n_rep <- as.integer(n_rep)
 
@@ -62,13 +62,18 @@ compute_log_fold_change <- function(df) {
 #' @param two_sample_test a two-sample test; should take as arguments (i) vector of expressions of target cells, (ii) vector of expressions of control cells, (iii) the indices of cells receiving the targeting gRNA, and (iv) the indices of the cells receiving the NT gRNAs.
 #' @export
 #' @examples
-#' two_sample_test <- function(target_cells, control_cells, response_id, target_cell_indices, control_cell_indices) t.test(target_cells, control_cells)$p.value
+#' \dontrun{
+#' two_sample_test <- function(target_cells, control_cells, response_id,
+#' target_cell_indices, control_cell_indices) {
+#' t.test(target_cells, control_cells)$p.value
+#' }
 #' response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 #' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 #' response_gRNA_group_pairs <-
 #'  expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
 #'              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 #' abstract_two_sample_test(response_odm, gRNA_odm, response_gRNA_group_pairs, two_sample_test)
+#' }
 abstract_two_sample_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, two_sample_test) {
   # load response data
   response_mat <- load_whole_odm(response_odm, FALSE)
@@ -79,9 +84,10 @@ abstract_two_sample_test <- function(response_odm, gRNA_odm, response_gRNA_group
 
   # loop through the pairs, calculating a p-value for each
   p_vals <- apply(X = response_gRNA_group_pairs, MARGIN = 1, FUN = function(r) {
-    gRNA_id <- as.character(r[["gRNA_group"]])
-    target_cell_indices <- gRNA_targets == gRNA_id
+    gRNA_group <- as.character(r[["gRNA_group"]])
+    target_cell_indices <- gRNA_targets == gRNA_group
     response_id <- as.character(r[["response_id"]])
+    # print(paste0("Analyzing ", response_id, " and ", gRNA_group))
     # get the target and control cells
     target_cells <- response_mat[response_id, target_cell_indices] |> unname()
     control_cells <- response_mat[response_id, control_cell_indices] |> unname()

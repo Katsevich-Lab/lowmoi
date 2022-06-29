@@ -17,6 +17,8 @@ the target is present as a column of the feature covariate matrix of the gRNA OD
 Get target assignments via max operation
 }
 \examples{
+\dontrun{
 gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 get_target_assignments_via_max_op(gRNA_odm)
+}
 }
