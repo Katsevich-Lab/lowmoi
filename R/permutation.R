@@ -5,7 +5,7 @@
 #' @inherit abstract_interface
 #' @param n_rep number of permutation replicates
 #' @export
-permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1000) {
+permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 10000) {
   # convert n_rep to integer type (if necessary)
   if (is.character(n_rep)) n_rep <- as.integer(n_rep)
 
@@ -79,8 +79,8 @@ abstract_two_sample_test <- function(response_odm, gRNA_odm, response_gRNA_group
 
   # loop through the pairs, calculating a p-value for each
   p_vals <- apply(X = response_gRNA_group_pairs, MARGIN = 1, FUN = function(r) {
-    gRNA_id <- as.character(r[["gRNA_group"]])
-    target_cell_indices <- gRNA_targets == gRNA_id
+    gRNA_group <- as.character(r[["gRNA_group"]])
+    target_cell_indices <- gRNA_targets == gRNA_group
     response_id <- as.character(r[["response_id"]])
     # get the target and control cells
     target_cells <- response_mat[response_id, target_cell_indices] |> unname()
