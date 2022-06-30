@@ -5,7 +5,7 @@
 #' @inherit abstract_interface
 #' @param n_rep number of permutation replicates
 #' @export
-permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 10000) {
+permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, n_rep = 1000) {
   # convert n_rep to integer type (if necessary)
   if (is.character(n_rep)) n_rep <- as.integer(n_rep)
 
@@ -30,7 +30,9 @@ permutation_test <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, 
       df$pert_indicator <- sample(df$pert_indicator)
       compute_log_fold_change(df)
     })
-    p_val <- mean(c(Inf, abs(beta_null)) >= abs(beta_star))
+
+    # compute the p-value via call to fit skew t (in sceptre)
+    p_val <- sceptre:::fit_skew_t(beta_null, beta_star, "both")$out_p
     return(p_val)
   }
 

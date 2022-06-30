@@ -8,7 +8,7 @@ permutation_test(
   response_odm,
   gRNA_odm,
   response_gRNA_group_pairs,
-  n_rep = 10000
+  n_rep = 1000
 )
 }
 \arguments{
