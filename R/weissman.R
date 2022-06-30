@@ -32,14 +32,14 @@ weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
     # get normalized matrix for cells with this gRNA and genes to test against
     cell_pop_targeting <- cell_pop$where(
       cells = sprintf('guide_target == \"%s\"', curr_gRNA_group),
-      genes = response_vars |> add_ENSG(),
+      genes = response_vars |> add_ENSG() |> as.list(),
       normalized = TRUE
     )
 
     # get normalized matrix for cells with control gRNAs and genes to test against
     cell_pop_control <- cell_pop$where(
       cells = 'guide_target == "non-targeting"',
-      genes = response_vars |> add_ENSG(),
+      genes = response_vars |> add_ENSG() |> as.list(),
       normalized = TRUE
     )
 
