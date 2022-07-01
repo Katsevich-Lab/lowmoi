@@ -40,10 +40,8 @@ load_whole_odm <- function(odm, csc_format = TRUE) {
 #'
 #' @examples
 #' \dontrun{
-#' schraivogel_enhancer_screen_chr11_gene <-
+#' schraivogel_enhancer_ground_truth_tapseq_gene <-
 #' load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-#' schraivogel_enhancer_screen_chr11_grna <-
-#' load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
 #' }
 load_dataset_modality <- function(data_fp, offsite_dir = .get_config_path("LOCAL_SCEPTRE2_DATA_DIR")) {
   modality_dir <- paste0(offsite_dir, "data/", data_fp)
@@ -52,6 +50,28 @@ load_dataset_modality <- function(data_fp, offsite_dir = .get_config_path("LOCAL
  return(odm)
 }
 
+
+#' Load dataset multimodal
+#'
+#' @param paper_fp (relative) file path to paper modality
+#' @param offsite_dir the SCETPRE2 offsite directory
+#'
+#' @return the (QC'ed) multimodal ODM
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' schraivogel_enhancer_screen_chr11 <-
+#' load_dataset_multimodal("schraivogel/enhancer_screen_chr11")
+#' }
+load_dataset_multimodal <- function(paper_fp, offsite_dir = .get_config_path("LOCAL_SCEPTRE2_DATA_DIR")) {
+  paper_dir <- paste0(offsite_dir, "data/", paper_fp, "/")
+  modalities <- list.files(paper_dir)
+  modalities <- modalities[modalities != "multimodal_metadata.rds"]
+  odm_fps <- sapply(X = modalities, FUN = function(modality) paste0(paper_dir, modality, "/matrix.odm")) |> unname()
+  multimodal_metadata_fp <- paste0(paper_dir, "multimodal_metadata.rds")
+  ondisc::read_multimodal_odm(odm_fps, multimodal_metadata_fp)
+}
 
 #' Get data method RAM matrix from small result
 #'
@@ -190,4 +210,28 @@ get_library_sizes <- function(response_odm) {
     stop("Neither n_umis nor n_fragments are columns of the cell covariates matrix of response_odm.")
   }
   cell_covariates[[lib_size_cov]]
+}
+
+
+#' Read all modalities
+#'
+#' @param paper name of the paper to load
+#' @param dataset name of the dataset within the paper to load
+#' @param sceptre2_data_dir location of the sceptre2 data directory
+#'
+#' @return a multimodal odm for the specified paper/dataset
+#' @export
+read_all_modalities <- function(paper, dataset, sceptre2_data_dir = paste0(.get_config_path("LOCAL_SCEPTRE2_DATA_DIR"), "data/")) {
+  dataset_dir <- paste0(sceptre2_data_dir, paper, "/", dataset)
+  modality_vect <- list.files(dataset_dir)
+  odm_list <- list()
+  for (modality in modality_vect) {
+    odm_dir <- paste0(dataset_dir, "/", modality, "/")
+    curr_odm <- read_odm(odm_fp = paste0(odm_dir, "matrix.odm"),
+                         metadata_fp = paste0(odm_dir, "metadata_orig.rds"))
+    odm_list <- c(odm_list, curr_odm)
+  }
+  names(odm_list) <- modality_vect
+  ret <- multimodal_ondisc_matrix(odm_list)
+  return(ret)
 }

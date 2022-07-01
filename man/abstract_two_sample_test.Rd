@@ -8,7 +8,8 @@ abstract_two_sample_test(
   response_odm,
   gRNA_odm,
   response_gRNA_group_pairs,
-  two_sample_test
+  two_sample_test,
+  progress
 )
 }
 \arguments{

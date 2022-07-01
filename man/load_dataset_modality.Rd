@@ -22,9 +22,7 @@ Load dataset modality
 }
 \examples{
 \dontrun{
-schraivogel_enhancer_screen_chr11_gene <-
+schraivogel_enhancer_ground_truth_tapseq_gene <-
 load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-schraivogel_enhancer_screen_chr11_grna <-
-load_dataset_modality("schraivogel/ground_truth_tapseq/grna")
 }
 }

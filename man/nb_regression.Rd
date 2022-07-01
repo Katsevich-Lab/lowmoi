@@ -4,7 +4,12 @@
 \alias{nb_regression}
 \title{NB regression}
 \usage{
-nb_regression(response_odm, gRNA_odm, response_gRNA_group_pairs)
+nb_regression(
+  response_odm,
+  gRNA_odm,
+  response_gRNA_group_pairs,
+  progress = TRUE
+)
 }
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
@@ -30,10 +35,18 @@ feature covariate matrix of \code{gRNA_odm}, \code{target_type} is ignored.
 }
 \examples{
 \dontrun{
+# a small example
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 response_gRNA_group_pairs <-
  expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
+             response_id = sample(ondisc::get_feature_ids(response_odm), 50))
+
+# a larger example
+response_odm <- load_dataset_modality("frangieh/control/gene")
+gRNA_odm <- load_dataset_modality("frangieh/control/grna_assignment")
+response_gRNA_group_pairs <-
+ expand.grid(gRNA_group = c("A2M", "ACSL3"),
              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 }
 }
