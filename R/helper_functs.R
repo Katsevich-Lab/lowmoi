@@ -235,3 +235,57 @@ read_all_modalities <- function(paper, dataset, sceptre2_data_dir = paste0(.get_
   ret <- multimodal_ondisc_matrix(odm_list)
   return(ret)
 }
+
+
+#' Get dataset for perturbation propensity analysis
+#'
+#' Get dataset for perturbation propensity analysis.
+#'
+#' @param paper "frangieh", "papalexi", etc.
+#' @param dataset "ifn_gamma", "eccite_screen", etc.
+#'
+#' @return Data frame that contains the gRNA assignments and technical covariates.
+#' @export
+get_data_for_pert_prop <- function(paper, dataset){
+  # get gRNA ODM
+  grna_fp <- paste0(paper, "/", dataset, "/grna_assignment")
+  grna_odm <- lowmoi::load_dataset_modality(data_fp = grna_fp)
+
+  # get response ODM
+  if (paper == "liscovitch") {
+    response_fp <- paste0(paper, "/", dataset, "/chromatin")
+  } else {
+    response_fp <- paste0(paper, "/", dataset, "/gene")
+  }
+  response_odm <- lowmoi::load_dataset_modality(data_fp = response_fp)
+
+  # get list of NTC gRNAs
+  ntcs <- grna_odm |>
+    ondisc::get_feature_covariates() |>
+    dplyr::filter(target == "non-targeting") |>
+    rownames() |>
+    unique()
+
+  # get the gRNA assigned to each cell
+  assigned_grnas_df <- grna_odm |>
+    ondisc::get_cell_covariates() |>
+    dplyr::select(assigned_gRNA)
+
+  # get a logical vector of whether a cell was assigned an NTC
+  ntc_cells <- assigned_grnas_df |>
+    dplyr::mutate(ntc = assigned_gRNA %in% ntcs) |>
+    dplyr::pull(ntc)
+
+  # restrict assigned gRNAs to cells with an NTC
+  assigned_grnas <- assigned_grnas_df[ntc_cells, , drop = F] |> dplyr::pull(assigned_gRNA)
+
+  # extract cell covariates from gene ODM, and restrict attention to cells with NTC
+  cell_covariates <- response_odm[, ntc_cells] |> ondisc::get_cell_covariates()
+
+  # append assigned_grnas column to cell_covariates
+  df <- cell_covariates |>
+    dplyr::mutate(assigned_grna = assigned_grnas)
+
+  # return
+  df
+}

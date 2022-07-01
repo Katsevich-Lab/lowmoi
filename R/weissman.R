@@ -32,14 +32,14 @@ weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
     # get normalized matrix for cells with this gRNA and genes to test against
     cell_pop_targeting <- cell_pop$where(
       cells = sprintf('guide_target == \"%s\"', curr_gRNA_group),
-      genes = response_vars |> add_ENSG(),
+      genes = response_vars |> add_ENSG() |> as.list(),
       normalized = TRUE
     )
 
     # get normalized matrix for cells with control gRNAs and genes to test against
     cell_pop_control <- cell_pop$where(
       cells = 'guide_target == "non-targeting"',
-      genes = response_vars |> add_ENSG(),
+      genes = response_vars |> add_ENSG() |> as.list(),
       normalized = TRUE
     )
 
@@ -90,8 +90,17 @@ odm_to_cell_pop <- function(response_odm, guide_targets) {
   cells_df <- ondisc::get_cell_covariates(response_odm) |>
     tibble::rownames_to_column(var = "cell_barcode") |>
     dplyr::mutate(guide_target = guide_targets) # add gRNA assignments
+  # change bio_rep to batch if it is present and batch is not
+  if("bio_rep" %in% names(cells_df)){
+    if(!("batch" %in% names(cells_df))){
+      cells_df <- cells_df |> dplyr::rename(batch = bio_rep)
+    } else{
+      stop("Uh oh! Both bio_rep and batch are present as cell covariates!")
+    }
+  }
+  # add batch information if it is not present
   if (!("batch" %in% names(cells_df))) {
-    cells_df$batch <- 1 # add batch information if it is not present
+    cells_df$batch <- 1
   }
   # # join with guide_to_target_map
   cells_df <- cells_df |>
