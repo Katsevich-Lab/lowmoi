@@ -245,7 +245,7 @@ read_all_modalities <- function(paper, dataset, sceptre2_data_dir = paste0(.get_
 #' @param metadata_file_name name of the metadata file to write (e.g., "metadata_qc.rds")
 #' @param sceptre2_data_dir location of the sceptre2 data directory
 #'
-#' @return
+#' @return NULL
 #' @export
 save_all_modalities <- function(multimodal_odm, paper, dataset, metadata_file_name, sceptre2_data_dir = paste0(.get_config_path("LOCAL_SCEPTRE2_DATA_DIR"), "data/")) {
   dataset_dir <- paste0(sceptre2_data_dir, paper, "/", dataset)
@@ -310,3 +310,30 @@ get_data_for_pert_prop <- function(paper, dataset) {
 }
 
 
+#' Process multimodal odm
+#'
+#' @param mm_odm a multimodal odm
+#'
+#' @return a streamlined, simpler multimodal odm
+#' @export
+process_multimodal_odm <- function(mm_odm, remove_grna_assignment_n_nonzero = TRUE) {
+  cell_covariate_m <- mm_odm |> get_cell_covariates()
+  if (remove_grna_assignment_n_nonzero) {
+    cell_covariate_m <- cell_covariate_m |> dplyr::mutate(grna_assignment_n_nonzero = NULL,
+                                                          grna_assignment_n_umis = NULL)
+  } else {
+    cell_covariate_m <- cell_covariate_m |> dplyr::mutate(grna_assignment_n_umis = NULL)
+  }
+
+  cell_covariate_colnames <- colnames(cell_covariate_m)
+  shared_covariates <- c("batch", "p_mito", "phase", "bio_rep", "lane")
+  for (shared_covariate in shared_covariates) {
+    match_col_names <- grep(pattern = shared_covariate, x = cell_covariate_colnames, value = TRUE)
+    if (length(match_col_names) >= 1) {
+      cell_covariate_m[[shared_covariate]] <- cell_covariate_m[[match_col_names[1]]]
+      for (match_col_name in match_col_names) cell_covariate_m[[match_col_name]] <- NULL
+    }
+  }
+  mm_odm@global_cell_covariates <- cell_covariate_m
+  return(mm_odm)
+}
