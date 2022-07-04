@@ -237,6 +237,25 @@ read_all_modalities <- function(paper, dataset, sceptre2_data_dir = paste0(.get_
 }
 
 
+#' Save all modalities
+#'
+#' @param multimodal_odm a multimodal ODM object
+#' @param paper name of the paper
+#' @param dataset name of the dataset within the paper
+#' @param metadata_file_name name of the metadata file to write (e.g., "metadata_qc.rds")
+#' @param sceptre2_data_dir location of the sceptre2 data directory
+#'
+#' @return
+#' @export
+save_all_modalities <- function(multimodal_odm, paper, dataset, metadata_file_name, sceptre2_data_dir = paste0(.get_config_path("LOCAL_SCEPTRE2_DATA_DIR"), "data/")) {
+  dataset_dir <- paste0(sceptre2_data_dir, paper, "/", dataset)
+  modality_list <- multimodal_odm@modalities |> names()
+  for (modality in modality_list) {
+    save_odm(odm = get_modality(multimodal_odm, modality),
+             metadata_fp = paste0(dataset_dir, "/", modality, "/", metadata_file_name))
+  }
+}
+
 #' Get dataset for perturbation propensity analysis
 #'
 #' Get dataset for perturbation propensity analysis.
@@ -246,7 +265,7 @@ read_all_modalities <- function(paper, dataset, sceptre2_data_dir = paste0(.get_
 #'
 #' @return Data frame that contains the gRNA assignments and technical covariates.
 #' @export
-get_data_for_pert_prop <- function(paper, dataset){
+get_data_for_pert_prop <- function(paper, dataset) {
   # get gRNA ODM
   grna_fp <- paste0(paper, "/", dataset, "/grna_assignment")
   grna_odm <- lowmoi::load_dataset_modality(data_fp = grna_fp)
@@ -289,3 +308,5 @@ get_data_for_pert_prop <- function(paper, dataset){
   # return
   df
 }
+
+
