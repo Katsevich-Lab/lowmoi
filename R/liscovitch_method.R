@@ -7,12 +7,12 @@
 #' @examples
 #' \dontrun{
 #' response_odm <- load_dataset_modality("liscovitch/experiment_small/chromatin")
-#' gRNA_odm <- load_dataset_modality("liscovitch/experiment_small/grna_assignment")
-#' response_gRNA_group_pairs <- expand.grid(response_id = response_odm |> ondisc::get_feature_ids(),
-#' gRNA_group = c("ARID1A", "ATRX"))
-#' res <- liscovitch_method(response_odm, gRNA_odm, response_gRNA_group_pairs)
+#' grna_odm <- load_dataset_modality("liscovitch/experiment_small/grna_assignment")
+#' response_grna_group_pairs <- expand.grid(response_id = response_odm |> ondisc::get_feature_ids(),
+#' grna_group = c("ARID1A", "ATRX"))
+#' res <- liscovitch_method(response_odm, grna_odm, response_grna_group_pairs)
 #' }
-liscovitch_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
+liscovitch_method <- function(response_odm, grna_odm, response_grna_group_pairs) {
   exp_data <- load_whole_odm(response_odm)
   # obtain the library sizes
   cell_covariates <- response_odm |> ondisc::get_cell_covariates()
@@ -22,22 +22,22 @@ liscovitch_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs)
   exp_data_norm <- Matrix::t(Matrix::t(exp_data)/cell_lib_sizes)
   rm(exp_data)
 
-  # assign gRNAs to cells; obtain the indexes of the negative control grnas
-  gRNA_targets <- get_target_assignments_via_max_op(gRNA_odm)
-  neg_control_idxs <- which(gRNA_targets == "non-targeting")
+  # assign grnas to cells; obtain the indexes of the negative control grnas
+  grna_targets <- get_target_assignments_via_max_op(grna_odm)
+  neg_control_idxs <- which(grna_targets == "non-targeting")
 
-  # cycle through response-gRNA table
-  p_vals <- apply(X = response_gRNA_group_pairs, MARGIN = 1, FUN = function(r) {
-    grna <- as.character(r[["gRNA_group"]])
+  # cycle through response-grna table
+  p_vals <- apply(X = response_grna_group_pairs, MARGIN = 1, FUN = function(r) {
+    grna <- as.character(r[["grna_group"]])
     response <- as.character(r[["response_id"]])
     response_row <- exp_data_norm[response,]
     response_row_scale <- scale(response_row)[,1]
 
-    target_cells <- response_row_scale[grna == gRNA_targets]
+    target_cells <- response_row_scale[grna == grna_targets]
     control_cells <- response_row_scale[neg_control_idxs]
     fit <- stats::t.test(target_cells, control_cells)
     fit$p.value
   })
-  response_gRNA_group_pairs$p_value <- p_vals
-  return(response_gRNA_group_pairs)
+  response_grna_group_pairs$p_value <- p_vals
+  return(response_grna_group_pairs)
 }

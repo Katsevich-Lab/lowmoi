@@ -3,12 +3,12 @@
 #'
 #' @inherit abstract_interface
 #' @export
-weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
+weissman_method <- function(response_odm, grna_odm, response_grna_group_pairs) {
   # obtain the cell-to-target assignments
-  if (gRNA_odm@ondisc_matrix@logical_mat) {
-    guide_targets <- get_target_assignments_via_max_op(gRNA_odm)
+  if (grna_odm@ondisc_matrix@logical_mat) {
+    guide_targets <- get_target_assignments_via_max_op(grna_odm)
   } else{
-    stop("The Weissman gRNA assignment method is not currently implemented.")
+    stop("The Weissman grna assignment method is not currently implemented.")
   }
 
   # convert to CellPopulation format
@@ -21,22 +21,22 @@ weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
   )
 
   # apply Weissman method
-  unique_gRNA_groups <- as.character(unique(response_gRNA_group_pairs$gRNA_group))
-  res_list <- lapply(unique_gRNA_groups, function(curr_gRNA_group) {
-    # find responses to test this gRNA against
-    response_vars <- response_gRNA_group_pairs |>
-      dplyr::filter(gRNA_group == curr_gRNA_group) |>
+  unique_grna_groups <- as.character(unique(response_grna_group_pairs$grna_group))
+  res_list <- lapply(unique_grna_groups, function(curr_grna_group) {
+    # find responses to test this grna against
+    response_vars <- response_grna_group_pairs |>
+      dplyr::filter(grna_group == curr_grna_group) |>
       dplyr::pull(response_id) |>
       as.character()
 
-    # get normalized matrix for cells with this gRNA and genes to test against
+    # get normalized matrix for cells with this grna and genes to test against
     cell_pop_targeting <- cell_pop$where(
-      cells = sprintf('guide_target == \"%s\"', curr_gRNA_group),
+      cells = sprintf('guide_target == \"%s\"', curr_grna_group),
       genes = response_vars |> add_ENSG() |> as.list(),
       normalized = TRUE
     )
 
-    # get normalized matrix for cells with control gRNAs and genes to test against
+    # get normalized matrix for cells with control grnas and genes to test against
     cell_pop_control <- cell_pop$where(
       cells = 'guide_target == "non-targeting"',
       genes = response_vars |> add_ENSG() |> as.list(),
@@ -47,14 +47,14 @@ weissman_method <- function(response_odm, gRNA_odm, response_gRNA_group_pairs) {
     p_vals <- ks_compare_pops(cell_pop_targeting, cell_pop_control)[[2]]
     out_df <- data.frame(
       response_id = names(p_vals) |> sapply(function(str)(substr(str, 6, nchar(str)))) |> unname(),
-      gRNA_group = curr_gRNA_group,
+      grna_group = curr_grna_group,
       p_value = unname(p_vals)
     )
     out_df
   })
   # concatenate and return results
   dplyr::left_join(
-    response_gRNA_group_pairs,
+    response_grna_group_pairs,
     do.call(what = "rbind", args = res_list)
   )
 }
@@ -89,7 +89,7 @@ odm_to_cell_pop <- function(response_odm, guide_targets) {
   # create cells_df for input to CellPopulation constructor
   cells_df <- ondisc::get_cell_covariates(response_odm) |>
     tibble::rownames_to_column(var = "cell_barcode") |>
-    dplyr::mutate(guide_target = guide_targets) # add gRNA assignments
+    dplyr::mutate(guide_target = guide_targets) # add grna assignments
   # change bio_rep to batch if it is present and batch is not
   if("bio_rep" %in% names(cells_df)){
     if(!("batch" %in% names(cells_df))){

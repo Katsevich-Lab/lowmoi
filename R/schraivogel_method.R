@@ -3,47 +3,47 @@
 #' Runs Schraivogel's MAST.cov method.
 #'
 #' @inherit abstract_interface
-#' @param gRNA_threshold A threshold for gRNA expression. This argument is optional and defaults to 8,
+#' @param grna_threshold A threshold for grna expression. This argument is optional and defaults to 8,
 #' which was Schraivogel et al's choice.
 #'
 #' @export
 schraivogel_method <- function(response_odm,
-                               gRNA_odm,
-                               response_gRNA_group_pairs,
-                               gRNA_threshold = 8) {
+                               grna_odm,
+                               response_grna_group_pairs,
+                               grna_threshold = 8) {
 
-  # pull the entire gRNA and gene ODMs into memory via load_whole_odm
-  grna_data <- load_whole_odm(gRNA_odm)
+  # pull the entire grna and gene ODMs into memory via load_whole_odm
+  grna_data <- load_whole_odm(grna_odm)
   gene_data <- load_whole_odm(response_odm)
 
-  # load the GROUPED gRNA matrix into memory; transpose
-  all_targets <- gRNA_odm |> ondisc::get_feature_covariates() |> dplyr::pull(target) |> unique()
-  combined_pert_mat_t <- ondisc::load_thresholded_and_grouped_gRNA(covariate_odm = gRNA_odm,
-                                                          gRNA_group = all_targets,
-                                                          gRNA_group_name = "target",
-                                                          threshold = gRNA_threshold) |> t()
+  # load the GROUPED grna matrix into memory; transpose
+  all_targets <- grna_odm |> ondisc::get_feature_covariates() |> dplyr::pull(target) |> unique()
+  combined_pert_mat_t <- ondisc::load_thresholded_and_grouped_grna(covariate_odm = grna_odm,
+                                                          grna_group = all_targets,
+                                                          grna_group_name = "target",
+                                                          threshold = grna_threshold) |> t()
 
-  # # identify which of the gRNAs are negative controls
+  # # identify which of the grnas are negative controls
   scramble.cols <- which(colnames(combined_pert_mat_t) == "non-targeting")
 
   # compute the number of genes expressed in each cell, which is the covariate that
   # this method adjusts for
   ngenes <- apply(gene_data > 0, 2, sum)
 
-  # loop over distinct gRNAs present in response_gRNA_group_pairs
+  # loop over distinct grnas present in response_grna_group_pairs
   lapply(
-    response_gRNA_group_pairs |>
-      dplyr::pull(gRNA_group) |>
+    response_grna_group_pairs |>
+      dplyr::pull(grna_group) |>
       unique() |>
       as.character(),
-    function(gRNA_group) {
+    function(grna_group) {
       # call the workhorse function, runSeuratTest
-      # Note: runSeuratTest will compute the p-values for a given gRNA against
+      # Note: runSeuratTest will compute the p-values for a given grna against
       #       ALL GENES; we then can extract the pairs we are interested in.
       #       This is unavoidable because the MAST.cov test depends on which
       #       genes are included, and in the original paper it was run on all genes.
       runSeuratTest(
-        g = gRNA_group,
+        g = grna_group,
         DGE = gene_data,
         pert = combined_pert_mat_t,
         covariate = ngenes,
@@ -52,11 +52,11 @@ schraivogel_method <- function(response_odm,
       )
     }
   ) |>
-    # combine the results, extract gene-gRNA group pairs of interest, and format for output
+    # combine the results, extract gene-grna group pairs of interest, and format for output
     dplyr::bind_rows() |>
-    dplyr::rename(response_id = gene, gRNA_group = guide, p_value = p_val) |>
-    dplyr::select(response_id, gRNA_group, p_value) |>
-    dplyr::semi_join(response_gRNA_group_pairs, by = c("response_id", "gRNA_group")) |>
+    dplyr::rename(response_id = gene, grna_group = guide, p_value = p_val) |>
+    dplyr::select(response_id, grna_group, p_value) |>
+    dplyr::semi_join(response_grna_group_pairs, by = c("response_id", "grna_group")) |>
     tibble::as_tibble()
 }
 

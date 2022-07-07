@@ -4,7 +4,7 @@
 #'
 #' @inherit abstract_interface
 #' @export
-nb_regression <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, progress = TRUE) {
+nb_regression <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE) {
   # obtain cell covariate data frame
   cell_covariate_df <- response_odm |> ondisc::get_cell_covariates()
   my_formula_str <- response_odm@misc$nb_regression_formula
@@ -32,7 +32,7 @@ nb_regression <- function(response_odm, gRNA_odm, response_gRNA_group_pairs, pro
   }
 
   # run the NB regression on all the data
-  res <- abstract_two_sample_test(response_odm, gRNA_odm, response_gRNA_group_pairs, two_sample_test, progress)
+  res <- abstract_two_sample_test(response_odm, grna_odm, response_grna_group_pairs, two_sample_test, progress)
   return(res)
 }
 

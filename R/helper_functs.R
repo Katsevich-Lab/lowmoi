@@ -110,15 +110,15 @@ get_sparse_matrix_pieces <- function(csc_mat) {
 }
 
 
-#' Get the name of a gRNA dataset
+#' Get the name of a grna dataset
 #'
 #' @param dataset_name the name of a dataset in paper/experiment/modality format
-#' @param gRNA_modality the name of the gRNA modality, one of "assignment" or "expression"
+#' @param grna_modality the name of the grna modality, one of "assignment" or "expression"
 #'
-#' @return the name of the gRNA dataset in paper/experiment/modality format
+#' @return the name of the grna dataset in paper/experiment/modality format
 #' @export
-get_gRNA_dataset_name <- function(dataset_name, gRNA_modality) {
-  paste0(sub('/[^/]*$', '', dataset_name), "/grna_", gRNA_modality)
+get_grna_dataset_name <- function(dataset_name, grna_modality) {
+  paste0(sub('/[^/]*$', '', dataset_name), "/grna_", grna_modality)
 }
 
 
@@ -157,13 +157,13 @@ get_undercover_groups <- function(ntc_names, group_size, partition_count) {
 }
 
 
-#' Get gRNA assignments via max operation
+#' Get grna assignments via max operation
 #'
-#' @param gRNA_odm a gRNA ODM;
+#' @param grna_odm a grna ODM;
 #'
-#' @return a vector of gRNA IDs obtained by applying a column-wise max operation to the gRNA ODM.
-get_gRNA_assignments_via_max_op <- function(gRNA_odm) {
-  ret <- gRNA_odm |>
+#' @return a vector of grna IDs obtained by applying a column-wise max operation to the grna ODM.
+get_grna_assignments_via_max_op <- function(grna_odm) {
+  ret <- grna_odm |>
     load_whole_odm() |>
     apply(MARGIN = 2, FUN = function(col) names(which.max(col))) |>
     unname()
@@ -173,23 +173,23 @@ get_gRNA_assignments_via_max_op <- function(gRNA_odm) {
 
 #' Get target assignments via max operation
 #'
-#' @param gRNA_odm a gRNA ODM
+#' @param grna_odm a grna ODM
 #'
-#' @return a vector of "targets" obtained by applying a column-wise max operation to the gRNA ODM;
-#' the target is present as a column of the feature covariate matrix of the gRNA ODM.
+#' @return a vector of "targets" obtained by applying a column-wise max operation to the grna ODM;
+#' the target is present as a column of the feature covariate matrix of the grna ODM.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
-#' get_target_assignments_via_max_op(gRNA_odm)
+#' grna_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
+#' get_target_assignments_via_max_op(grna_odm)
 #' }
-get_target_assignments_via_max_op <- function(gRNA_odm) {
-  gRNA_feature_covariates <- gRNA_odm |> ondisc::get_feature_covariates()
-  gRNA_to_target_map <- stats::setNames(row.names(gRNA_feature_covariates), gRNA_feature_covariates$target)
-  gRNA_assignments <- get_gRNA_assignments_via_max_op(gRNA_odm)
-  gRNA_targets <- names(gRNA_to_target_map)[match(x = gRNA_assignments, table = gRNA_to_target_map)]
-  return(gRNA_targets)
+get_target_assignments_via_max_op <- function(grna_odm) {
+  grna_feature_covariates <- grna_odm |> ondisc::get_feature_covariates()
+  grna_to_target_map <- stats::setNames(row.names(grna_feature_covariates), grna_feature_covariates$target)
+  grna_assignments <- get_grna_assignments_via_max_op(grna_odm)
+  grna_targets <- names(grna_to_target_map)[match(x = grna_assignments, table = grna_to_target_map)]
+  return(grna_targets)
 }
 
 
@@ -263,10 +263,10 @@ save_all_modalities <- function(multimodal_odm, paper, dataset, metadata_file_na
 #' @param paper "frangieh", "papalexi", etc.
 #' @param dataset "ifn_gamma", "eccite_screen", etc.
 #'
-#' @return Data frame that contains the gRNA assignments and technical covariates.
+#' @return Data frame that contains the grna assignments and technical covariates.
 #' @export
 get_data_for_pert_prop <- function(paper, dataset) {
-  # get gRNA ODM
+  # get grna ODM
   grna_fp <- paste0(paper, "/", dataset, "/grna_assignment")
   grna_odm <- lowmoi::load_dataset_modality(data_fp = grna_fp)
 
@@ -278,25 +278,25 @@ get_data_for_pert_prop <- function(paper, dataset) {
   }
   response_odm <- lowmoi::load_dataset_modality(data_fp = response_fp)
 
-  # get list of NTC gRNAs
+  # get list of NTC grnas
   ntcs <- grna_odm |>
     ondisc::get_feature_covariates() |>
     dplyr::filter(target == "non-targeting") |>
     rownames() |>
     unique()
 
-  # get the gRNA assigned to each cell
+  # get the grna assigned to each cell
   assigned_grnas_df <- grna_odm |>
     ondisc::get_cell_covariates() |>
-    dplyr::select(assigned_gRNA)
+    dplyr::select(assigned_grna)
 
   # get a logical vector of whether a cell was assigned an NTC
   ntc_cells <- assigned_grnas_df |>
-    dplyr::mutate(ntc = assigned_gRNA %in% ntcs) |>
+    dplyr::mutate(ntc = assigned_grna %in% ntcs) |>
     dplyr::pull(ntc)
 
-  # restrict assigned gRNAs to cells with an NTC
-  assigned_grnas <- assigned_grnas_df[ntc_cells, , drop = F] |> dplyr::pull(assigned_gRNA)
+  # restrict assigned grnas to cells with an NTC
+  assigned_grnas <- assigned_grnas_df[ntc_cells, , drop = F] |> dplyr::pull(assigned_grna)
 
   # extract cell covariates from gene ODM, and restrict attention to cells with NTC
   cell_covariates <- response_odm[, ntc_cells] |> ondisc::get_cell_covariates()

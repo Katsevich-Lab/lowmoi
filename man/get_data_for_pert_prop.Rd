@@ -12,7 +12,7 @@ get_data_for_pert_prop(paper, dataset)
 \item{dataset}{"ifn_gamma", "eccite_screen", etc.}
 }
 \value{
-Data frame that contains the gRNA assignments and technical covariates.
+Data frame that contains the grna assignments and technical covariates.
 }
 \description{
 Get dataset for perturbation propensity analysis.

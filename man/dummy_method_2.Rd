@@ -6,8 +6,8 @@
 \usage{
 dummy_method_2(
   response_odm,
-  gRNA_odm,
-  response_gRNA_group_pairs,
+  grna_odm,
+  response_grna_group_pairs,
   shape1 = 5,
   shape2 = 10
 )
@@ -15,43 +15,43 @@ dummy_method_2(
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
 
-\item{gRNA_odm}{an ODM of either gRNA expressions (counts) or gRNA
+\item{grna_odm}{an ODM of either grna expressions (counts) or grna
 assignments (logical)}
 
-\item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and
-\code{gRNA_group} giving the response ID / gRNA group pairs to analyze.}
+\item{response_grna_group_pairs}{a data frame with columns \code{response_id} and
+\code{grna_group} giving the response ID / grna group pairs to analyze.}
 
 \item{shape1}{first shape of beta distribution; if character, cast to numeric}
 
 \item{shape2}{second shape of beta distribution; if character, cast to numeric}
 }
 \value{
-a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
+a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.
 }
 \description{
 A dummy method; samples beta distributed p-values
 }
 \details{
-The \code{gRNA_group} column of \code{response_gRNA_group_pairs} contains the names of gRNA groups.
-These gRNA groups are assumed to be present in the \code{target} column of the feature
-covariate matrix of \code{gRNA_odm}. This column should contain entries "non-targeting"
-indicating the non-targeting gRNAs. If \code{target_type} is present as a column of the
-feature covariate matrix of \code{gRNA_odm}, \code{target_type} is ignored.
+The \code{grna_group} column of \code{response_grna_group_pairs} contains the names of grna groups.
+These grna groups are assumed to be present in the \code{target} column of the feature
+covariate matrix of \code{grna_odm}. This column should contain entries "non-targeting"
+indicating the non-targeting grnas. If \code{target_type} is present as a column of the
+feature covariate matrix of \code{grna_odm}, \code{target_type} is ignored.
 }
 \examples{
 \dontrun{
 # a small example
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
-response_gRNA_group_pairs <-
- expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
+grna_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
+response_grna_group_pairs <-
+ expand.grid(grna_group = c("CCNE2-TSS", "HS2-enh"),
              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 
 # a larger example
 response_odm <- load_dataset_modality("frangieh/control/gene")
-gRNA_odm <- load_dataset_modality("frangieh/control/grna_assignment")
-response_gRNA_group_pairs <-
- expand.grid(gRNA_group = c("A2M", "ACSL3"),
+grna_odm <- load_dataset_modality("frangieh/control/grna_assignment")
+response_grna_group_pairs <-
+ expand.grid(grna_group = c("A2M", "ACSL3"),
              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 }
 }

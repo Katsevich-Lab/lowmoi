@@ -6,8 +6,8 @@
 \usage{
 abstract_two_sample_test(
   response_odm,
-  gRNA_odm,
-  response_gRNA_group_pairs,
+  grna_odm,
+  response_grna_group_pairs,
   two_sample_test,
   progress
 )
@@ -15,26 +15,26 @@ abstract_two_sample_test(
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
 
-\item{gRNA_odm}{an ODM of either gRNA expressions (counts) or gRNA
+\item{grna_odm}{an ODM of either grna expressions (counts) or grna
 assignments (logical)}
 
-\item{response_gRNA_group_pairs}{a data frame with columns \code{response_id} and
-\code{gRNA_group} giving the response ID / gRNA group pairs to analyze.}
+\item{response_grna_group_pairs}{a data frame with columns \code{response_id} and
+\code{grna_group} giving the response ID / grna group pairs to analyze.}
 
-\item{two_sample_test}{a two-sample test; should take as arguments (i) vector of expressions of target cells, (ii) vector of expressions of control cells, (iii) the indices of cells receiving the targeting gRNA, and (iv) the indices of the cells receiving the NT gRNAs.}
+\item{two_sample_test}{a two-sample test; should take as arguments (i) vector of expressions of target cells, (ii) vector of expressions of control cells, (iii) the indices of cells receiving the targeting grna, and (iv) the indices of the cells receiving the NT grnas.}
 }
 \value{
-a data frame with columns \code{response_id}, \code{gRNA_group}, and \code{p_value}.
+a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.
 }
 \description{
 An abstract a two-sample test. Pass function \code{two_sample_test} to carry out a given two-sample test (e.g., a t-test or a permutation test).
 }
 \details{
-The \code{gRNA_group} column of \code{response_gRNA_group_pairs} contains the names of gRNA groups.
-These gRNA groups are assumed to be present in the \code{target} column of the feature
-covariate matrix of \code{gRNA_odm}. This column should contain entries "non-targeting"
-indicating the non-targeting gRNAs. If \code{target_type} is present as a column of the
-feature covariate matrix of \code{gRNA_odm}, \code{target_type} is ignored.
+The \code{grna_group} column of \code{response_grna_group_pairs} contains the names of grna groups.
+These grna groups are assumed to be present in the \code{target} column of the feature
+covariate matrix of \code{grna_odm}. This column should contain entries "non-targeting"
+indicating the non-targeting grnas. If \code{target_type} is present as a column of the
+feature covariate matrix of \code{grna_odm}, \code{target_type} is ignored.
 }
 \examples{
 \dontrun{
@@ -43,10 +43,10 @@ target_cell_indices, control_cell_indices) {
 t.test(target_cells, control_cells)$p.value
 }
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
-response_gRNA_group_pairs <-
- expand.grid(gRNA_group = c("CCNE2-TSS", "HS2-enh"),
+grna_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
+response_grna_group_pairs <-
+ expand.grid(grna_group = c("CCNE2-TSS", "HS2-enh"),
              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
-abstract_two_sample_test(response_odm, gRNA_odm, response_gRNA_group_pairs, two_sample_test)
+abstract_two_sample_test(response_odm, grna_odm, response_grna_group_pairs, two_sample_test)
 }
 }

@@ -4,7 +4,7 @@
 \alias{process_multimodal_odm}
 \title{Process multimodal odm}
 \usage{
-process_multimodal_odm(mm_odm)
+process_multimodal_odm(mm_odm, remove_grna_assignment_n_nonzero = TRUE)
 }
 \arguments{
 \item{mm_odm}{a multimodal odm}

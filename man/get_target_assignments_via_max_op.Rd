@@ -4,21 +4,21 @@
 \alias{get_target_assignments_via_max_op}
 \title{Get target assignments via max operation}
 \usage{
-get_target_assignments_via_max_op(gRNA_odm)
+get_target_assignments_via_max_op(grna_odm)
 }
 \arguments{
-\item{gRNA_odm}{a gRNA ODM}
+\item{grna_odm}{a grna ODM}
 }
 \value{
-a vector of "targets" obtained by applying a column-wise max operation to the gRNA ODM;
-the target is present as a column of the feature covariate matrix of the gRNA ODM.
+a vector of "targets" obtained by applying a column-wise max operation to the grna ODM;
+the target is present as a column of the feature covariate matrix of the grna ODM.
 }
 \description{
 Get target assignments via max operation
 }
 \examples{
 \dontrun{
-gRNA_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
-get_target_assignments_via_max_op(gRNA_odm)
+grna_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
+get_target_assignments_via_max_op(grna_odm)
 }
 }
