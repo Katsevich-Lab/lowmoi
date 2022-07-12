@@ -8,6 +8,7 @@
 permutation_test <- function(response_odm, grna_odm, response_grna_group_pairs, n_rep = 1000, progress = TRUE) {
   # convert n_rep to integer type (if necessary)
   if (is.character(n_rep)) n_rep <- as.integer(n_rep)
+  if (is.character(progress)) progress <- as.logical(progress)
 
   # obtain the library sizes
   lib_sizes <- get_library_sizes(response_odm)

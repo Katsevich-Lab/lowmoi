@@ -5,6 +5,7 @@
 #' @inherit abstract_interface
 #' @export
 nb_regression <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE) {
+  if (is.character(progress)) progress <- as.logical(progress)
   # obtain cell covariate data frame
   cell_covariate_df <- response_odm |> ondisc::get_cell_covariates()
   my_formula_str <- response_odm@misc$nb_regression_formula
