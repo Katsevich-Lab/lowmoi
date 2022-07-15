@@ -102,6 +102,15 @@ odm_to_cell_pop <- function(response_odm, guide_targets) {
   if (!("batch" %in% names(cells_df))) {
     cells_df$batch <- 1
   }
+
+  # if some batches contain no NTCs, merge all batches
+  min_ntcs <- cells_df |>
+    dplyr::group_by(batch) |>
+    dplyr::summarise(num_ntcs = sum(guide_target == "non-targeting")) |>
+    dplyr::summarise(min(num_ntcs)) |>
+    dplyr::pull()
+  cells_df$batch <- 1
+
   # # join with guide_to_target_map
   cells_df <- cells_df |>
     dplyr::rename(UMI_count = n_umis, gem_group = batch) |>
