@@ -109,7 +109,9 @@ odm_to_cell_pop <- function(response_odm, guide_targets) {
     dplyr::summarise(num_ntcs = sum(guide_target == "non-targeting")) |>
     dplyr::summarise(min(num_ntcs)) |>
     dplyr::pull()
-  cells_df$batch <- 1
+  if(min_ntcs == 0){
+    cells_df$batch <- 1
+  }
 
   # # join with guide_to_target_map
   cells_df <- cells_df |>
