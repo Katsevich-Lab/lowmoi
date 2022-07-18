@@ -78,6 +78,7 @@ compute_log_fold_change <- function(df) {
 #' abstract_two_sample_test(response_odm, grna_odm, response_grna_group_pairs, two_sample_test)
 #' }
 abstract_two_sample_test <- function(response_odm, grna_odm, response_grna_group_pairs, two_sample_test, progress) {
+  set.seed(4)
   # get grna assignments and target assignments; obtain indices of NT cells
   grna_targets <- get_target_assignments_via_max_op(grna_odm)
   control_cell_indices <- which(grna_targets == "non-targeting")
