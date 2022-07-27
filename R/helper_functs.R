@@ -224,15 +224,16 @@ get_library_sizes <- function(response_odm) {
 read_all_modalities <- function(paper, dataset, sceptre2_data_dir = paste0(.get_config_path("LOCAL_SCEPTRE2_DATA_DIR"), "data/")) {
   dataset_dir <- paste0(sceptre2_data_dir, paper, "/", dataset)
   modality_vect <- list.files(dataset_dir)
+  modality_vect <- modality_vect[modality_vect %in% c("gene", "grna_assignment", "grna_expression", "chromatin", "protein")]
   odm_list <- list()
   for (modality in modality_vect) {
     odm_dir <- paste0(dataset_dir, "/", modality, "/")
-    curr_odm <- read_odm(odm_fp = paste0(odm_dir, "matrix.odm"),
+    curr_odm <- ondisc::read_odm(odm_fp = paste0(odm_dir, "matrix.odm"),
                          metadata_fp = paste0(odm_dir, "metadata_orig.rds"))
     odm_list <- c(odm_list, curr_odm)
   }
   names(odm_list) <- modality_vect
-  ret <- multimodal_ondisc_matrix(odm_list)
+  ret <- ondisc::multimodal_ondisc_matrix(odm_list)
   return(ret)
 }
 
