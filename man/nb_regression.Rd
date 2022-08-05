@@ -19,6 +19,8 @@ assignments (logical)}
 
 \item{response_grna_group_pairs}{a data frame with columns \code{response_id} and
 \code{grna_group} giving the response ID / grna group pairs to analyze.}
+
+\item{progress}{print progress messages?}
 }
 \value{
 a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.

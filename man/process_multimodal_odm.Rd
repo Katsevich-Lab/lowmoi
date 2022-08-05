@@ -8,6 +8,8 @@ process_multimodal_odm(mm_odm, remove_grna_assignment_n_nonzero = TRUE)
 }
 \arguments{
 \item{mm_odm}{a multimodal odm}
+
+\item{remove_grna_assignment_n_nonzero}{remove the column \code{grna_assignment_n_nonzero} (as it coincides with \code{grna_expression_n_nonzero})?}
 }
 \value{
 a streamlined, simpler multimodal odm

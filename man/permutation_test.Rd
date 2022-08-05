@@ -10,7 +10,8 @@ permutation_test(
   response_grna_group_pairs,
   n_rep = 1000,
   progress = TRUE,
-  return_permuted_test_stats = FALSE
+  return_permuted_test_stats = FALSE,
+  test_stat = "log_fold_change"
 )
 }
 \arguments{
@@ -23,6 +24,12 @@ assignments (logical)}
 \code{grna_group} giving the response ID / grna group pairs to analyze.}
 
 \item{n_rep}{number of permutation replicates}
+
+\item{progress}{print progress messages?}
+
+\item{return_permuted_test_stats}{return the permuted test statistics (alongside the corresponding p-values)?}
+
+\item{test_stat}{string indicating the test statistic to use (either "log_fold_change" or "mann_whit")}
 }
 \value{
 a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.

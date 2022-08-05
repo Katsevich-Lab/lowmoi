@@ -186,6 +186,7 @@ get_grna_assignments_via_max_op <- function(grna_odm) {
 #' }
 get_target_assignments_via_max_op <- function(grna_odm) {
   grna_feature_covariates <- grna_odm |> ondisc::get_feature_covariates()
+  grna_feature_covariates$target[is.na(grna_feature_covariates$target)] <- "candidate"
   grna_to_target_map <- stats::setNames(row.names(grna_feature_covariates), grna_feature_covariates$target)
   grna_assignments <- get_grna_assignments_via_max_op(grna_odm)
   grna_targets <- names(grna_to_target_map)[match(x = grna_assignments, table = grna_to_target_map)]
@@ -252,7 +253,7 @@ save_all_modalities <- function(multimodal_odm, paper, dataset, metadata_file_na
   dataset_dir <- paste0(sceptre2_data_dir, paper, "/", dataset)
   modality_list <- multimodal_odm@modalities |> names()
   for (modality in modality_list) {
-    save_odm(odm = get_modality(multimodal_odm, modality),
+    ondisc::save_odm(odm = ondisc::get_modality(multimodal_odm, modality),
              metadata_fp = paste0(dataset_dir, "/", modality, "/", metadata_file_name))
   }
 }
@@ -314,11 +315,12 @@ get_data_for_pert_prop <- function(paper, dataset) {
 #' Process multimodal odm
 #'
 #' @param mm_odm a multimodal odm
+#' @param remove_grna_assignment_n_nonzero remove the column `grna_assignment_n_nonzero` (as it coincides with `grna_expression_n_nonzero`)?
 #'
 #' @return a streamlined, simpler multimodal odm
 #' @export
 process_multimodal_odm <- function(mm_odm, remove_grna_assignment_n_nonzero = TRUE) {
-  cell_covariate_m <- mm_odm |> get_cell_covariates()
+  cell_covariate_m <- mm_odm |> ondisc::get_cell_covariates()
   if (remove_grna_assignment_n_nonzero) {
     cell_covariate_m <- cell_covariate_m |> dplyr::mutate(grna_assignment_n_nonzero = NULL,
                                                           grna_assignment_n_umis = NULL)

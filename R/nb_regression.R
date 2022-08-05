@@ -3,6 +3,7 @@
 #' Implements a negative binomial regression.
 #'
 #' @inherit abstract_interface
+#' @param progress print progress messages?
 #' @export
 nb_regression <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE) {
   if (is.character(progress)) progress <- as.logical(progress)
@@ -14,12 +15,7 @@ nb_regression <- function(response_odm, grna_odm, response_grna_group_pairs, pro
   # define the NB regression test function
   two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices) {
     # construct the data matrix to pass to GLM
-    df_left <- data.frame(expression = c(target_cells, control_cells),
-                          pert_indicator = c(rep(1, length(target_cells)),
-                                             rep(0, length(control_cells))))
-    df_right <- rbind(cell_covariate_df[target_cell_indices,], cell_covariate_df[control_cell_indices,])
-    df <- cbind(df_left, df_right)
-
+    df <- create_design_matrix(target_cells, control_cells, target_cell_indices, control_cell_indices, cell_covariate_df)
     # first, use aux function to estimate size
     est_size <- max(estimate_size(df, my_formula), 0.01)
 
@@ -61,4 +57,14 @@ estimate_size <- function(df, formula) {
   }, error = function(e) backup(), warning = function(w) backup())
 
   return(gene_precomp_size_out)
+}
+
+
+create_design_matrix <- function(target_cells, control_cells, target_cell_indices, control_cell_indices, cell_covariate_df) {
+  df_left <- data.frame(expression = c(target_cells, control_cells),
+                        pert_indicator = c(rep(1, length(target_cells)),
+                                           rep(0, length(control_cells))))
+  df_right <- rbind(cell_covariate_df[target_cell_indices,], cell_covariate_df[control_cell_indices,])
+  df <- cbind(df_left, df_right)
+  return(df)
 }
