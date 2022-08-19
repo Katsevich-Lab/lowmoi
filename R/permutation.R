@@ -27,24 +27,16 @@ permutation_test <- function(response_odm, grna_odm, response_grna_group_pairs, 
                      lib_size = (c(target_cell_sizes, control_cell_sizes)))
 
     # compute beta on ground truth data
-    beta_star <- compute_test_stat(df, test_stat)
+    z_star <- compute_test_stat(df, test_stat)
 
     # compute permuted test statistics
-    beta_null <- replicate(n = n_rep, expr = {
+    z_null <- replicate(n = n_rep, expr = {
       df$pert_indicator <- sample(df$pert_indicator)
       compute_test_stat(df, test_stat)
     })
 
     # compute the p-value via call to fit skew t (in sceptre)
-    p_val <- sceptre:::fit_skew_t(beta_null, beta_star, "both")$out_p
-
-    if (return_permuted_test_stats) {
-      resamples_df <- as.data.frame(matrix(beta_null, nrow = 1, ncol = length(beta_null)))
-      colnames(resamples_df) <- paste0("resample_", seq(1, length(beta_null)))
-      out <- cbind(data.frame(p_value = p_val, test_stat = beta_star), resamples_df)
-    } else {
-      out <- p_val
-    }
+    out <- run_skew_t_prepare_output(z_null, z_star, return_permuted_test_stats)
     return(out)
   }
 
