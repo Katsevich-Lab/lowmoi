@@ -23,4 +23,10 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs) {
                                        B = 2500,
                                        side = "both",
                                        full_output = FALSE)
+
+  # select p_val, grna_grop, response_id
+  res_select <- res |>
+    dplyr::select(response_id, grna_group, p_value) |>
+    as.data.frame()
+  return(res_select)
 }
