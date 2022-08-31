@@ -3,6 +3,7 @@
 export(abstract_two_sample_test)
 export(dummy_method_1)
 export(dummy_method_2)
+export(fisher_exact)
 export(get_data_for_pert_prop)
 export(get_data_method_ram_matrix_from_small_result)
 export(get_grna_dataset_name)
