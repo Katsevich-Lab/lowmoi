@@ -4,7 +4,7 @@
 #'
 #' @inherit abstract_interface
 #' @export
-fisher_exact <- function(response_odm, grna_odm, response_grna_group_pairs) {
+fisher_exact <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE) {
   # define the Fisher exact two sample test
   two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices) {
     # create the contingency table
@@ -22,7 +22,7 @@ fisher_exact <- function(response_odm, grna_odm, response_grna_group_pairs) {
     fit <- fisher.test(contingency_table)
     fit$p.value
   }
-  res <- abstract_two_sample_test(response_odm, grna_odm, response_grna_group_pairs, two_sample_test, FALSE)
+  res <- abstract_two_sample_test(response_odm, grna_odm, response_grna_group_pairs, two_sample_test, progress)
   return(res)
 }
 
