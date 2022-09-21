@@ -340,3 +340,47 @@ process_multimodal_odm <- function(mm_odm, remove_grna_assignment_n_nonzero = TR
   mm_odm@global_cell_covariates <- cell_covariate_m
   return(mm_odm)
 }
+
+
+#' Get sceptre function args for pair
+#'
+#' For a given response ID and undercover gRNA, obtains the arguments passed (by do.call) to sceptre in the undercover pipeline.
+#'
+#' @param response_id ID of the response
+#' @param undercover_grna ID of the gRNA to go undercover
+#' @param dataset_name name of the dataset
+#' @param output_amount sceptre output amount
+#' @param B number of resamples B
+#'
+#' @return a list of (swapped) arguments to pass (via do.call) to sceptre;
+#' @export
+get_sceptre_function_args_for_pair <- function(response_id, undercover_grna, dataset_name, output_amount, B) {
+  undercover_ntc_name_in <- undercover_grna
+  response_odm <- lowmoi::load_dataset_modality(dataset_name)
+  grna_dataset_name <- lowmoi::get_grna_dataset_name(dataset_name, "assignment")
+  grna_odm <- lowmoi::load_dataset_modality(grna_dataset_name)
+
+  undercover_ntc_name <- strsplit(x = undercover_ntc_name_in, split = ",", fixed = TRUE) |> unlist()
+  grna_feature_covariates <- grna_odm |> ondisc::get_feature_covariates()
+  grna_feature_covariates[undercover_ntc_name, "target"] <- "undercover"
+  if (!("non-targeting" %in% grna_feature_covariates$target)) {
+    stop("After performing label swap, `non-targeting` is no longer string in the `target` column.")
+  }
+  grna_odm_swapped <- grna_odm |> ondisc::mutate_feature_covariates(target = grna_feature_covariates$target)
+  response_grna_group_pairs <- data.frame(response_id = response_id,
+                                          grna_group = "undercover")
+  response_odm <- response_odm; grna_odm <- grna_odm_swapped; response_grna_group_pairs <- response_grna_group_pairs
+  mm_odm <- lowmoi::process_multimodal_odm(ondisc::multimodal_ondisc_matrix(list(response = response_odm, grna = grna_odm)))
+  form <- mm_odm@modalities$response@misc$sceptre_formula
+
+  ret <- list(mm_odm = mm_odm,
+              response_grna_group_pairs = response_grna_group_pairs,
+              form = form,
+              response_modality_name = "response",
+              grna_modality_name = "grna",
+              grna_group_column_name = "target",
+              B = B,
+              side = "both",
+              output_amount = output_amount)
+  return(ret)
+}

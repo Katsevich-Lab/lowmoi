@@ -4,7 +4,7 @@
 #'
 #' @inherit abstract_interface
 #' @param B number of resamples to draw
-#' @param reduced output (TRUE) or intermed
+#' @param output_amount amount of output to return from function (ranging from 1-3)
 #' @export
 sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 100000, output_amount = 1) {
   if (!is.numeric(B)) B <- as.integer(B)

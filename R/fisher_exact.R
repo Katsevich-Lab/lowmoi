@@ -2,6 +2,7 @@
 #'
 #' Carries out Fisher's exact test.
 #'
+#' @param progress print progress statements?
 #' @inherit abstract_interface
 #' @export
 fisher_exact <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE) {
@@ -19,7 +20,7 @@ fisher_exact <- function(response_odm, grna_odm, response_grna_group_pairs, prog
                                 byrow = TRUE)
     colnames(contingency_table) <- c("no_expression", "expression")
     rownames(contingency_table) <- c("treatment", "control")
-    fit <- fisher.test(contingency_table)
+    fit <- stats::fisher.test(contingency_table)
     fit$p.value
   }
   res <- abstract_two_sample_test(response_odm, grna_odm, response_grna_group_pairs, two_sample_test, progress)

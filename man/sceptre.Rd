@@ -23,7 +23,7 @@ assignments (logical)}
 
 \item{B}{number of resamples to draw}
 
-\item{reduced}{output (TRUE) or intermed}
+\item{output_amount}{amount of output to return from function (ranging from 1-3)}
 }
 \value{
 a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.

@@ -12,12 +12,17 @@ RoxygenNote: 7.2.0
 Imports: 
     dplyr,
     MASS,
+    MAST,
     Matrix,
     methods,
     ondisc,
+    readr,
     reticulate,
     sceptre,
+    sceptre2,
     Seurat,
+    SingleCellExperiment,
+    SummarizedExperiment,
     tibble,
     tidyr,
     VGAM

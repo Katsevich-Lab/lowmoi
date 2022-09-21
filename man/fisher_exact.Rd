@@ -4,7 +4,12 @@
 \alias{fisher_exact}
 \title{Fisher's exact test}
 \usage{
-fisher_exact(response_odm, grna_odm, response_grna_group_pairs)
+fisher_exact(
+  response_odm,
+  grna_odm,
+  response_grna_group_pairs,
+  progress = TRUE
+)
 }
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
@@ -14,6 +19,8 @@ assignments (logical)}
 
 \item{response_grna_group_pairs}{a data frame with columns \code{response_id} and
 \code{grna_group} giving the response ID / grna group pairs to analyze.}
+
+\item{progress}{print progress statements?}
 }
 \value{
 a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.
