@@ -67,7 +67,7 @@ load_dataset_modality <- function(data_fp, offsite_dir = .get_config_path("LOCAL
 load_dataset_multimodal <- function(paper_fp, offsite_dir = .get_config_path("LOCAL_SCEPTRE2_DATA_DIR")) {
   paper_dir <- paste0(offsite_dir, "data/", paper_fp, "/")
   modalities <- list.files(paper_dir)
-  modalities <- modalities[modalities != "multimodal_metadata.rds"]
+  modalities <- modalities[modalities %in% c("gene", "protein", "grna_assignment", "grna_expression", "chromatin")]
   odm_fps <- sapply(X = modalities, FUN = function(modality) paste0(paper_dir, modality, "/matrix.odm")) |> unname()
   multimodal_metadata_fp <- paste0(paper_dir, "multimodal_metadata.rds")
   ondisc::read_multimodal_odm(odm_fps, multimodal_metadata_fp)
