@@ -5,7 +5,7 @@
 #' @inherit abstract_interface
 #' @param B number of permutation replicates
 #' @param progress print progress messages?
-mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs, B = 10, progress = TRUE) {
+mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs, B = 50, progress = TRUE) {
   # convert n_rep to integer type (if necessary)
   if (is.character(B)) B <- as.integer(B)
   if (is.character(progress)) progress <- as.logical(progress)
@@ -38,10 +38,14 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
     m_u <- n_cells_treat * n_cells_control / 2
     sigma_u <- sqrt(n_cells_treat * n_cells_control * (n_cells_treat +  n_cells_control + 1)/12)
     z <- (permutation_runs - m_u)/sigma_u
-    p_emp <- sceptre2:::compute_empirical_p_value(z_star = z[1], z_null = z[-1], side = "both")
-
-    out <- matrix(data = c(z, m_u, sigma_u, p_emp), nrow = 1)
-    colnames(out) <- c("z_null", paste0("z_", seq(1, B)), "mu", "sigma", "p_emp")
+    z_star <- z[1]
+    z_null <- z[-1]
+    p_emp <- sceptre2:::compute_empirical_p_value(z_star = z_star, z_null = z_null, side = "both")
+    p_clt <- 2 * pnorm(q = -abs(z_star))
+    p_r <- stats::wilcox.test(x = rel_expressions[ground_truth_treatment_idxs],
+                              y = rel_expressions[-ground_truth_treatment_idxs])$p.val
+    out <- matrix(data = c(z, m_u, sigma_u, p_emp, p_clt, p_r), nrow = 1)
+    colnames(out) <- c("z_null", paste0("z_", seq(1, B)), "mu", "sigma", "p_emp", "p_clt", "p_r")
     return(as.data.frame(out))
   }
 
