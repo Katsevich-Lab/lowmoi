@@ -8,7 +8,8 @@ fisher_exact(
   response_odm,
   grna_odm,
   response_grna_group_pairs,
-  progress = TRUE
+  progress = TRUE,
+  threshold = "median"
 )
 }
 \arguments{
@@ -21,6 +22,8 @@ assignments (logical)}
 \code{grna_group} giving the response ID / grna group pairs to analyze.}
 
 \item{progress}{print progress statements?}
+
+\item{threshold}{threshold to use to categorize cells into "highly expressed" and "lowly expressed" groups; one of "median" and "zero" (for now)}
 }
 \value{
 a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.

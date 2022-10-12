@@ -8,7 +8,7 @@ sceptre(
   response_odm,
   grna_odm,
   response_grna_group_pairs,
-  B = 1e+05,
+  B = 2500,
   output_amount = 1
 )
 }

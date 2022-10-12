@@ -39,7 +39,7 @@ abstract_two_sample_test <- function(response_odm, grna_odm, response_grna_group
     two_sample_test(target_cells, control_cells, target_cell_indices, control_cell_indices)
   }, simplify = FALSE)
   if (cbind_res) {
-    to_attach <- dplyr::bind_rows(res)
+    to_attach <- data.table::rbindlist(res)
     response_grna_group_pairs <- cbind(response_grna_group_pairs, to_attach)
   } else {
     response_grna_group_pairs$p_value <- unlist(res)
