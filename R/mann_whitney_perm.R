@@ -6,7 +6,7 @@
 #' @inherit abstract_interface
 #' @param B number of permutation replicates
 #' @param progress print progress messages?
-mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs, B = 10000, progress = TRUE) {
+mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs, B = 100000, progress = FALSE) {
   # convert n_rep to integer type (if necessary)
   if (is.character(B)) B <- as.integer(B)
   if (is.character(progress)) progress <- as.logical(progress)
@@ -33,7 +33,7 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
     ground_truth_treatment_idxs <- seq(1, length(target_cells))
 
     # compute the permuted test statistics
-    permutation_runs <- run_permutations_mw(rel_expressions, ground_truth_treatment_idxs, synthetic_treatment_indices)
+    permutation_runs <- run_permutations_mw(rel_expressions, ground_truth_treatment_idxs, synthetic_treatment_indices, progress)
 
     # compute the normalized statistics
     m_u <- n_cells_treat * n_cells_control / 2
@@ -45,8 +45,8 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
     p_clt <- 2 * pnorm(q = -abs(z_star))
     p_r <- stats::wilcox.test(x = rel_expressions[ground_truth_treatment_idxs],
                               y = rel_expressions[-ground_truth_treatment_idxs])$p.val
-    out <- matrix(data = c(z, m_u, sigma_u, p_emp, p_clt, p_r), nrow = 1)
-    colnames(out) <- c("z_null", paste0("z_", seq(1, B)), "mu", "sigma", "p_emp", "p_clt", "p_r")
+    out <- matrix(data = c(z, m_u, sigma_u, p_emp, p_clt, p_r, p_r), nrow = 1)
+    colnames(out) <- c("z_null", paste0("z_", seq(1, B)), "mu", "sigma", "p_emp", "p_clt", "p_r", "p_value")
     return(as.data.frame(out))
   }
 
@@ -56,13 +56,13 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
 }
 
 
-run_permutations_mw <- function(rel_expressions, ground_truth_treatment_idxs, synthetic_treatment_indices) {
+run_permutations_mw <- function(rel_expressions, ground_truth_treatment_idxs, synthetic_treatment_indices, progress) {
   u_star <- compute_mw_test_stat(rel_expressions, ground_truth_treatment_idxs)
   u_null <- apply(X = synthetic_treatment_indices, MARGIN = 2, FUN = function(curr_truth_treatment_idxs) {
-    cat("*")
+    if (progress) cat("*")
     compute_mw_test_stat(rel_expressions, curr_truth_treatment_idxs)
   })
-  cat("\n")
+  if (progress) cat("\n")
   return(c(u_star, u_null))
 }
 
