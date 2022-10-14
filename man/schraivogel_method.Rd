@@ -48,5 +48,7 @@ response_grna_group_pairs <-
 # a larger example
 response_odm <- load_dataset_modality("frangieh/control/gene")
 grna_odm <- load_dataset_modality("frangieh/control/grna_assignment")
+response_grna_group_pairs <- data.frame(grna_group = "A2M",
+                                        response_id = sample(ondisc::get_feature_ids(response_odm), 1))
 }
 }

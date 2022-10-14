@@ -2,10 +2,11 @@
 #'
 #' Runs a Mann-Whitney test using permutations.
 #'
+#' @export
 #' @inherit abstract_interface
 #' @param B number of permutation replicates
 #' @param progress print progress messages?
-mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs, B = 50, progress = TRUE) {
+mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs, B = 10000, progress = TRUE) {
   # convert n_rep to integer type (if necessary)
   if (is.character(B)) B <- as.integer(B)
   if (is.character(progress)) progress <- as.logical(progress)
