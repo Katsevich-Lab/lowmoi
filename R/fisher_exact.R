@@ -4,9 +4,10 @@
 #'
 #' @param progress print progress statements?
 #' @param threshold threshold to use to categorize cells into "highly expressed" and "lowly expressed" groups; one of "median" and "zero" (for now)
+#' @param control_group the control group to use: "ntc" for cells containing an NTC or "compliment" for the compliment of the treatment cells
 #' @inherit abstract_interface
 #' @export
-fisher_exact <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE, threshold = "median") {
+fisher_exact <- function(response_odm, grna_odm, response_grna_group_pairs, control_group = "ntc", progress = TRUE, threshold = "median") {
   # define the Fisher exact two sample test
   two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices) {
     if (threshold == "median") {
@@ -29,7 +30,11 @@ fisher_exact <- function(response_odm, grna_odm, response_grna_group_pairs, prog
     fit <- stats::fisher.test(contingency_table)
     fit$p.value
   }
-  res <- abstract_two_sample_test(response_odm, grna_odm, response_grna_group_pairs, two_sample_test, progress)
+  res <- abstract_two_sample_test(response_odm = response_odm,
+                                  grna_odm = grna_odm,
+                                  response_grna_group_pairs = response_grna_group_pairs,
+                                  two_sample_test = two_sample_test,
+                                  progress = progress,
+                                  control_group = control_group)
   return(res)
 }
-

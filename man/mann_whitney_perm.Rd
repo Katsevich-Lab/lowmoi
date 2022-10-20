@@ -8,8 +8,8 @@ mann_whitney_perm(
   response_odm,
   grna_odm,
   response_grna_group_pairs,
-  B = 10000,
-  progress = TRUE
+  B = 1e+05,
+  progress = FALSE
 )
 }
 \arguments{

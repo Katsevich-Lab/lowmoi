@@ -16,62 +16,58 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
 
   # define the permutation test function
   two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices) {
-    # compute the relative expressions
-    expressions <- c(target_cells, control_cells)
-    lib_sizes <- c(lib_sizes[target_cell_indices], lib_sizes[control_cell_indices])
-    rm(target_cell_indices, control_cell_indices)
-    rel_expressions <- log(100000 * expressions/lib_sizes + 1)
-    rm(expressions, lib_sizes)
+    # normalize the data to create samples x (for target cells) and y (for control cells)
+    x <- target_cells/(lib_sizes[target_cell_indices])
+    y <- control_cells/(lib_sizes[control_cell_indices])
+    combined <- c(x, y)
 
-    # obtain the relevant sample sizes
-    n_cells_curr_de <- length(rel_expressions)
-    n_cells_treat <- length(target_cells)
-    n_cells_control <- n_cells_curr_de - n_cells_treat
+    # generate the permutation indices
+    synthetic_treatment_indices <- replicate(n = B,
+                                             expr = sample.int(n = length(combined), size = length(x), replace = FALSE))
 
-    # sample the synthetic treatment idxs
-    synthetic_treatment_indices <- replicate(n = B, expr = sample.int(n = n_cells_curr_de, size = n_cells_treat))
-    ground_truth_treatment_idxs <- seq(1, length(target_cells))
+    # compute the empirical null distribution
+    z_null <- sapply(X = seq(1, B), FUN = function(i) {
+      if (i %% 1000 == 0) print(i)
+      col <- synthetic_treatment_indices[,i]
+      x_curr <- combined[col]
+      y_curr <- combined[-col]
+      run_mw_test(x_curr, y_curr)
+    })
+    z_null_jitter <- z_null + runif(n = B, min = -1e-5, max = 1e-5)
+    z_star <- run_mw_test(x, y)
 
-    # compute the permuted test statistics
-    permutation_runs <- run_permutations_mw(rel_expressions, ground_truth_treatment_idxs, synthetic_treatment_indices, progress)
+    # MW p-value
+    p_value <- 2 * min(pnorm(z_star), pnorm(z_star, lower.tail = FALSE))
 
-    # compute the normalized statistics
-    m_u <- n_cells_treat * n_cells_control / 2
-    sigma_u <- sqrt(n_cells_treat * n_cells_control * (n_cells_treat +  n_cells_control + 1)/12)
-    z <- (permutation_runs - m_u)/sigma_u
-    z_star <- z[1]
-    z_null <- z[-1]
-    p_emp <- sceptre2:::compute_empirical_p_value(z_star = z_star, z_null = z_null, side = "both")
-    p_clt <- 2 * pnorm(q = -abs(z_star))
-    p_r <- stats::wilcox.test(x = rel_expressions[ground_truth_treatment_idxs],
-                              y = rel_expressions[-ground_truth_treatment_idxs])$p.val
-    out <- matrix(data = c(z, m_u, sigma_u, p_emp, p_clt, p_r, p_r), nrow = 1)
-    colnames(out) <- c("z_null", paste0("z_", seq(1, B)), "mu", "sigma", "p_emp", "p_clt", "p_r", "p_value")
-    return(as.data.frame(out))
+    # empirical p-value
+    p_emp <- sceptre2:::compute_empirical_p_value(z_star, z_null, side = "both")
+
+    # ks statistic for N(0,1) fit
+    ks_stat <- stats::ks.test(z_null_jitter, pnorm)$statistic[[1]]
+    out <- as.data.frame(matrix(data = c(z_star, z_null, p_value, p_emp, ks_stat), nrow = 1))
+    colnames(out) <- c("z_star", paste0("z_", seq(1, B)), "p_value", "p_emp", "ks_stat")
+
+    return(out)
   }
 
   # run the permutation test
-  res <- abstract_two_sample_test(response_odm, grna_odm, response_grna_group_pairs, two_sample_test, progress, TRUE)
+  res <- abstract_two_sample_test(response_odm, grna_odm,
+                                  response_grna_group_pairs, two_sample_test,
+                                  progress, "ntc", TRUE)
   return(res)
 }
 
 
-run_permutations_mw <- function(rel_expressions, ground_truth_treatment_idxs, synthetic_treatment_indices, progress) {
-  u_star <- compute_mw_test_stat(rel_expressions, ground_truth_treatment_idxs)
-  u_null <- apply(X = synthetic_treatment_indices, MARGIN = 2, FUN = function(curr_truth_treatment_idxs) {
-    if (progress) cat("*")
-    compute_mw_test_stat(rel_expressions, curr_truth_treatment_idxs)
-  })
-  if (progress) cat("\n")
-  return(c(u_star, u_null))
-}
-
-
-compute_mw_test_stat <- function(rel_expressions, curr_truth_treatment_idxs) {
-  y <- rel_expressions[curr_truth_treatment_idxs]
-  x <- rel_expressions[-curr_truth_treatment_idxs]
-  m <- outer(X = x, Y = y, FUN = function(x, y) {
-    ifelse(x == y, 0.5, as.integer(x > y))
-  })
-  u <- sum(m)
+run_mw_test <- function(x, y) {
+  r <- c(x, y)
+  r <- rank(r)
+  n.x <- as.double(length(x))
+  n.y <- as.double(length(y))
+  STATISTIC <- c(W = sum(r[seq_along(x)]) - n.x * (n.x + 1)/2)
+  NTIES <- table(r)
+  z <- STATISTIC - n.x * n.y/2
+  SIGMA <- sqrt((n.x * n.y/12) * ((n.x + n.y + 1) -  sum(NTIES^3 - NTIES)/((n.x + n.y) * (n.x + n.y - 1))))
+  CORRECTION <- sign(z) * 0.5
+  z <- (z - CORRECTION)/SIGMA
+  return(z[[1]])
 }
