@@ -40,7 +40,7 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
     p_value <- 2 * min(pnorm(z_star), pnorm(z_star, lower.tail = FALSE))
 
     # empirical p-value
-    p_emp <- sceptre2:::compute_empirical_p_value(z_star, z_null, side = "both")
+    p_emp <- sceptre2:::compute_empirical_p_value(z_star, z_null_jitter, side = "both")
 
     # ks statistic for N(0,1) fit
     ks_stat <- stats::ks.test(z_null_jitter, pnorm)$statistic[[1]]
