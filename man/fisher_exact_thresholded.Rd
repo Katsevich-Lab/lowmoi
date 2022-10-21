@@ -8,7 +8,7 @@ fisher_exact_thresholded(
   response_odm,
   grna_odm,
   response_grna_group_pairs,
-  control_group = "ntc",
+  control_groups = c("ntc", "compliment"),
   progress = TRUE,
   grna_thresholds = c(1, 3, 5, 7, 8)
 )
@@ -21,8 +21,6 @@ assignments (logical)}
 
 \item{response_grna_group_pairs}{a data frame with columns \code{response_id} and
 \code{grna_group} giving the response ID / grna group pairs to analyze.}
-
-\item{control_group}{the control group to use: "ntc" for cells containing an NTC or "compliment" for the compliment of the treatment cells}
 
 \item{progress}{print progress statements?}
 }

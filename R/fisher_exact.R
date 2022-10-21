@@ -48,6 +48,7 @@ fisher_exact <- function(response_odm, grna_odm, response_grna_group_pairs, cont
 #' a fisher exact test. Cells that cannot be confidently assigned to a given gRNA are excluded.
 #'
 #' @inherit fisher_exact
+#' @export
 #' @examples
 #' \dontrun{
 #' response_odm <- load_dataset_modality("schraivogel/ground_truth_perturbseq/gene")
