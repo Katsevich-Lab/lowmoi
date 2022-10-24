@@ -6,6 +6,14 @@
 #' @inherit abstract_interface
 #' @param B number of permutation replicates
 #' @param progress print progress messages?
+#' @examples
+#' \dontrun{
+#' response_odm <- load_dataset_modality("papalexi/eccite_screen/gene")
+#' grna_odm <- load_dataset_modality("papalexi/eccite_screen/grna_assignment")
+#' response_grna_group_pairs <-
+#'  expand.grid(grna_group = c("CUL3", "CMTM6"),
+#'              response_id = sample(ondisc::get_feature_ids(response_odm), 5))
+#' }
 mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs, B = 100000, progress = FALSE) {
   # convert n_rep to integer type (if necessary)
   if (is.character(B)) B <- as.integer(B)

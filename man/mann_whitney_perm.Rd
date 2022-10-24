@@ -50,17 +50,10 @@ feature covariate matrix of \code{grna_odm}, \code{target_type} is ignored.
 }
 \examples{
 \dontrun{
-# a small example
-response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
-grna_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
+response_odm <- load_dataset_modality("papalexi/eccite_screen/gene")
+grna_odm <- load_dataset_modality("papalexi/eccite_screen/grna_assignment")
 response_grna_group_pairs <-
- expand.grid(grna_group = c("CCNE2", "HS2"),
-             response_id = sample(ondisc::get_feature_ids(response_odm), 50))
-
-# a larger example
-response_odm <- load_dataset_modality("frangieh/control/gene")
-grna_odm <- load_dataset_modality("frangieh/control/grna_assignment")
-response_grna_group_pairs <- data.frame(grna_group = "A2M",
-                                        response_id = sample(ondisc::get_feature_ids(response_odm), 1))
+ expand.grid(grna_group = c("CUL3", "CMTM6"),
+             response_id = sample(ondisc::get_feature_ids(response_odm), 5))
 }
 }
