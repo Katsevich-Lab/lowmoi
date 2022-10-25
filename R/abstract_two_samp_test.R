@@ -26,6 +26,7 @@ abstract_two_sample_test <- function(response_odm, grna_odm, response_grna_group
   set.seed(4)
   # get grna assignments and target assignments; obtain indices of NT cells
   grna_targets <- get_target_assignments_via_max_op(grna_odm)
+  lib_sizes <- get_library_sizes(response_odm)
 
   # loop through the pairs, calculating a p-value for each
   res <- apply(X = response_grna_group_pairs, MARGIN = 1, FUN = function(r) {
