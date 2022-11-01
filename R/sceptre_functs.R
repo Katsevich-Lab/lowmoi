@@ -6,9 +6,10 @@
 #' @param B number of resamples to draw
 #' @param output_amount amount of output to return from function (ranging from 1-3)
 #' @export
-sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500, output_amount = 1) {
+sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500, output_amount = 1, sn_approx = TRUE) {
   if (!is.numeric(B)) B <- as.integer(B)
   if (!is.numeric(output_amount)) output_amount <- as.integer(output_amount)
+  if (!is.logical(sn_approx)) sn_approx <- as.logical(sn_approx)
 
   # construct the multimodal ODM
   mm_odm <- ondisc::multimodal_ondisc_matrix(list(response = response_odm, grna = grna_odm)) |>
@@ -26,7 +27,8 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500,
                                        grna_group_column_name = "target",
                                        B = B,
                                        side = "both",
-                                       output_amount = output_amount) |> as.data.frame()
+                                       output_amount = output_amount,
+                                       sn_approx = sn_approx) |> as.data.frame()
 
   # select p_val, grna_grop, response_id
   if (output_amount == 1) {
