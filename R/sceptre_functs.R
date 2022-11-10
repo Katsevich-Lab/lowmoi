@@ -5,14 +5,12 @@
 #' @inherit abstract_interface
 #' @param B number of resamples to draw
 #' @param output_amount amount of output to return from function (ranging from 1-3)
-#' @param sn_approx use a skew-normal approximation?
 #' @param with_covariates should covariates (beyond log-transformed library size) be included in the model?
 #' @export
-sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500, output_amount = 1, sn_approx = TRUE, with_covariates = TRUE) {
+sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500, output_amount = 1, with_covariates = TRUE) {
   if (!is.numeric(B)) B <- as.integer(B)
   if (!is.numeric(output_amount)) output_amount <- as.integer(output_amount)
-  if (!is.logical(sn_approx)) sn_approx <- as.logical(sn_approx)
-
+  if (!is.logical(with_covariates)) with_covariates <- as.logical(with_covariates)
 
   # construct the multimodal ODM
   mm_odm <- ondisc::multimodal_ondisc_matrix(list(response = response_odm, grna = grna_odm)) |>
@@ -34,8 +32,7 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500,
                                        grna_group_column_name = "target",
                                        B = B,
                                        side = "both",
-                                       output_amount = output_amount,
-                                       sn_approx = sn_approx) |> as.data.frame()
+                                       output_amount = output_amount) |> as.data.frame()
 
   # select p_val, grna_grop, response_id
   if (output_amount == 1) {
