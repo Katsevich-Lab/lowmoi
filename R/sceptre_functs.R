@@ -32,7 +32,8 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500,
                                        grna_group_column_name = "target",
                                        B = B,
                                        side = "both",
-                                       output_amount = output_amount) |> as.data.frame()
+                                       output_amount = output_amount,
+                                       in_memory = TRUE) |> as.data.frame()
 
   # select p_val, grna_grop, response_id
   if (output_amount == 1) {

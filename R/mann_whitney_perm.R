@@ -22,6 +22,14 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
   # obtain the library sizes
   lib_sizes <- get_library_sizes(response_odm)
 
+  # obtain the random indexes
+  unique_grna_groups <- as.character(unique(response_grna_group_pairs$grna_group))
+  grna_targets <- get_target_assignments_via_max_op(grna_odm)
+  grna_group_info <- sceptre2:::get_grna_group_info(grna_group_assignments = grna_targets,
+                                                    input_grna_groups = )
+
+  sceptre2:::get_grna_permutation_idxs()
+
   # define the permutation test function
   two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices) {
     # normalize the data to create samples x (for target cells) and y (for control cells)

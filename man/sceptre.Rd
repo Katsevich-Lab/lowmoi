@@ -10,7 +10,6 @@ sceptre(
   response_grna_group_pairs,
   B = 2500,
   output_amount = 1,
-  sn_approx = TRUE,
   with_covariates = TRUE
 )
 }
@@ -26,8 +25,6 @@ assignments (logical)}
 \item{B}{number of resamples to draw}
 
 \item{output_amount}{amount of output to return from function (ranging from 1-3)}
-
-\item{sn_approx}{use a skew-normal approximation?}
 
 \item{with_covariates}{should covariates (beyond log-transformed library size) be included in the model?}
 }
