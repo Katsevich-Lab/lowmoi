@@ -26,7 +26,6 @@ abstract_two_sample_test <- function(response_odm, grna_odm, response_grna_group
   set.seed(4)
   # get grna assignments and target assignments; obtain indices of NT cells
   grna_targets <- get_target_assignments_via_max_op(grna_odm)
-  lib_sizes <- get_library_sizes(response_odm)
 
   # loop through the pairs, calculating a p-value for each
   res <- apply(X = response_grna_group_pairs, MARGIN = 1, FUN = function(r) {
@@ -44,7 +43,7 @@ abstract_two_sample_test <- function(response_odm, grna_odm, response_grna_group
     # get the target and control cells (NOTE: perhaps only load if necessary)
     target_cells <- response_odm[[response_id, target_cell_indices]] |> as.numeric()
     control_cells <- response_odm[[response_id, control_cell_indices]] |> as.numeric()
-    two_sample_test(target_cells, control_cells, target_cell_indices, control_cell_indices)
+    two_sample_test(target_cells, control_cells, target_cell_indices, control_cell_indices, response_id, grna_group)
   }, simplify = FALSE)
   if (cbind_res) {
     to_attach <- data.table::rbindlist(res)

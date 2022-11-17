@@ -44,3 +44,7 @@ utils::globalVariables(c("NTC", "Pr(>Chisq)", "ci.hi", "ci.lo", "ci_high", "ci_l
 #'                                         response_id = sample(ondisc::get_feature_ids(response_odm), 4))
 #' }
 NULL
+
+#' @useDynLib lowmoi, .registration = TRUE
+#' @importFrom Rcpp sourceCpp
+NULL
