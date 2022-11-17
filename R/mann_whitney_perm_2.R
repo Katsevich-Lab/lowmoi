@@ -6,6 +6,7 @@
 #' @inherit abstract_interface
 #' @param B number of permutation replicates
 #' @param progress print progress messages?
+#' @param full_output return the full output (including the resampled statistics; TRUE) or a reduced output (FALSE)?
 #' @examples
 #' \dontrun{
 #' response_odm <- load_dataset_modality("papalexi/eccite_screen/gene")
@@ -14,10 +15,11 @@
 #'  expand.grid(grna_group = c("CUL3", "CMTM6"),
 #'              response_id = sample(ondisc::get_feature_ids(response_odm), 5))
 #' }
-mann_whitney_perm_2 <- function(response_odm, grna_odm, response_grna_group_pairs, B = 10000, progress = FALSE) {
+mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs, B = 1000, progress = TRUE, full_output = FALSE) {
   # convert n_rep to integer type (if necessary)
   if (is.character(B)) B <- as.integer(B)
   if (is.character(progress)) progress <- as.logical(progress)
+  if (is.character(full_output)) full_output <- as.logical(full_output)
 
   # obtain the library sizes
   lib_sizes <- get_library_sizes(response_odm)
@@ -73,10 +75,13 @@ mann_whitney_perm_2 <- function(response_odm, grna_odm, response_grna_group_pair
 
     # ks statistic for N(0,1) fit
     ks_stat <- stats::ks.test(z_null_jitter, stats::pnorm)$statistic[[1]]
-    # out <- as.data.frame(matrix(data = c(z_star, z_null, p_value, p_emp, ks_stat), nrow = 1))
-    # colnames(out) <- c("z_star", paste0("z_", seq(1, B)), "p_value", "p_emp", "ks_stat")
-    out <- as.data.frame(matrix(data = c(z_star, p_value, p_emp, p_r, ks_stat), nrow = 1))
-    colnames(out) <- c("z_star", "p_value", "p_emp", "p_r", "ks_stat")
+    if (full_output) {
+      out <- as.data.frame(matrix(data = c(z_star, z_null, p_value, p_emp, ks_stat), nrow = 1))
+      colnames(out) <- c("z_star", paste0("z_", seq(1, B)), "p_value", "p_emp", "ks_stat")
+    } else {
+      out <- as.data.frame(matrix(data = c(z_star, p_value, p_emp, p_r, ks_stat), nrow = 1))
+      colnames(out) <- c("z_star", "p_value", "p_emp", "p_r", "ks_stat")
+    }
     return(out)
   }
 
