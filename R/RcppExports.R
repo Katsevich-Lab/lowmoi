@@ -5,3 +5,7 @@ run_mw_test_cpp <- function(n_x, n_y, combined, synthetic_treatment_idxs) {
     .Call(`_lowmoi_run_mw_test_cpp`, n_x, n_y, combined, synthetic_treatment_idxs)
 }
 
+run_mw_test_cpp_low_level <- function(n_x, n_y, combined) {
+    .Call(`_lowmoi_run_mw_test_cpp_low_level`, n_x, n_y, combined)
+}
+

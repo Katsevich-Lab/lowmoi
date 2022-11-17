@@ -5,15 +5,21 @@
 #' @inherit abstract_interface
 #' @param progress print progress messages?
 #' @export
-nb_regression <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE) {
+nb_regression <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE, with_covariates = TRUE) {
   if (is.character(progress)) progress <- as.logical(progress)
   # obtain cell covariate data frame
   cell_covariate_df <- response_odm |> ondisc::get_cell_covariates()
-  my_formula_str <- response_odm@misc$nb_regression_formula
-  my_formula <- stats::as.formula(paste0("expression ", my_formula_str, " + pert_indicator"))
+
+  # get the formula
+  if (with_covariates) {
+    my_formula_str <- response_odm@misc$nb_regression_formula
+    my_formula <- stats::as.formula(paste0("expression ", my_formula_str, " + pert_indicator"))
+  } else {
+    my_formula <- stats::formula(expression ~ log(n_umis) + pert_indicator)
+  }
 
   # define the NB regression test function
-  two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices) {
+  two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices, response_id, grna_group) {
     # construct the data matrix to pass to GLM
     df <- create_design_matrix(target_cells, control_cells, target_cell_indices, control_cell_indices, cell_covariate_df)
     # first, use aux function to estimate size
@@ -67,4 +73,25 @@ create_design_matrix <- function(target_cells, control_cells, target_cell_indice
   df_right <- rbind(cell_covariate_df[target_cell_indices,], cell_covariate_df[control_cell_indices,])
   df <- cbind(df_left, df_right)
   return(df)
+}
+
+
+# helper functions: NB regression with and without covariates
+#' @export
+nb_regression_w_covariates <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE) {
+  nb_regression(response_odm = response_odm,
+                grna_odm =grna_odm,
+                response_grna_group_pairs = response_grna_group_pairs,
+                progress = progress,
+                with_covariates = TRUE)
+}
+
+
+#' @export
+nb_regression_no_covariates <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE) {
+  nb_regression(response_odm = response_odm,
+                grna_odm =grna_odm,
+                response_grna_group_pairs = response_grna_group_pairs,
+                progress = progress,
+                with_covariates = FALSE)
 }

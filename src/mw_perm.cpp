@@ -55,3 +55,32 @@ NumericVector run_mw_test_cpp(int n_x, int n_y, NumericVector combined, IntegerM
   }
   return(out);
 }
+
+
+// [[Rcpp::export]]
+double run_mw_test_cpp_low_level(int n_x, int n_y, NumericVector combined) {
+  Function rank("rank");
+  Function table("table");
+  double statistic = 0, z, top_sum, sigma, correction;
+  int length_nties;
+  NumericVector r = rank(combined);
+  for (int i = 0; i < n_x; i ++) {
+    statistic += r[i];
+  }
+  statistic -= n_x * (n_x + 1)/2;
+  NumericVector nties = table(r);
+  length_nties = nties.length();
+  z = statistic - n_x * n_y/2;
+  top_sum = 0;
+  for (int i = 0; i < length_nties; i ++) {
+    top_sum += nties[i] * (nties[i] * nties[i] - 1);
+  }
+  sigma = sqrt((n_x * n_y/12) * ((n_x + n_y + 1) - top_sum/((n_x + n_y) * (n_x + n_y - 1))));
+  if (z < 0) {
+    correction = -0.5;
+  } else {
+    correction = 0.5;
+  }
+  z = (z - correction)/sigma;
+  return(z);
+}

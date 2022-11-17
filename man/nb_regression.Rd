@@ -8,7 +8,8 @@ nb_regression(
   response_odm,
   grna_odm,
   response_grna_group_pairs,
-  progress = TRUE
+  progress = TRUE,
+  with_covariates = TRUE
 )
 }
 \arguments{

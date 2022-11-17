@@ -40,13 +40,22 @@ mann_whitney_perm_2 <- function(response_odm, grna_odm, response_grna_group_pair
     # normalize the data to create samples x (for target cells) and y (for control cells)
     x <- 1000 * target_cells/(lib_sizes[target_cell_indices])
     y <- 1000 * control_cells/(lib_sizes[control_cell_indices])
+    n_x <- length(x)
+    n_y <- length(y)
     combined <- c(x, y)
 
     # generate the permutation indices
     synthetic_treatment_indices <- random_idxs[[grna_group]]
 
     # compute z_null and z_star
-    zs <- run_mw_test_cpp(length(x), length(y), combined, synthetic_treatment_indices)
+    zs <- sapply(X = seq(1, B + 1), FUN = function(i) {
+      if (i %% 1000 == 0) print(i)
+      col <- synthetic_treatment_indices[,i]
+      x_curr <- combined[col]
+      y_curr <- combined[-col]
+      curr_combined <- c(x_curr, y_curr)
+      run_mw_test(x_curr, y_curr)
+    })
     z_star <- zs[1]
     z_null <- zs[-1]
 

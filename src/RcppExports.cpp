@@ -24,9 +24,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// run_mw_test_cpp_low_level
+double run_mw_test_cpp_low_level(int n_x, int n_y, NumericVector combined);
+RcppExport SEXP _lowmoi_run_mw_test_cpp_low_level(SEXP n_xSEXP, SEXP n_ySEXP, SEXP combinedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n_x(n_xSEXP);
+    Rcpp::traits::input_parameter< int >::type n_y(n_ySEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type combined(combinedSEXP);
+    rcpp_result_gen = Rcpp::wrap(run_mw_test_cpp_low_level(n_x, n_y, combined));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_lowmoi_run_mw_test_cpp", (DL_FUNC) &_lowmoi_run_mw_test_cpp, 4},
+    {"_lowmoi_run_mw_test_cpp_low_level", (DL_FUNC) &_lowmoi_run_mw_test_cpp_low_level, 3},
     {NULL, NULL, 0}
 };
 

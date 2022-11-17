@@ -23,7 +23,7 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
   lib_sizes <- get_library_sizes(response_odm)
 
   # define the permutation test function
-  two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices) {
+  two_sample_test <- function(target_cells, control_cells, target_cell_indices, control_cell_indices, response_id, grna_group) {
     # normalize the data to create samples x (for target cells) and y (for control cells)
     x <- target_cells/(lib_sizes[target_cell_indices])
     y <- control_cells/(lib_sizes[control_cell_indices])
