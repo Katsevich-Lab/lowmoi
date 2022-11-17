@@ -2,7 +2,6 @@
 #include <math.h>
 using namespace Rcpp;
 
-// [[Rcpp::export]]
 NumericVector run_mw_test_cpp(int n_x, int n_y, NumericVector combined, IntegerMatrix synthetic_treatment_idxs) {
   // define quantities
   int nrow = synthetic_treatment_idxs.nrow(), ncol = synthetic_treatment_idxs.ncol();
@@ -57,7 +56,6 @@ NumericVector run_mw_test_cpp(int n_x, int n_y, NumericVector combined, IntegerM
 }
 
 
-// [[Rcpp::export]]
 double run_mw_test_cpp_low_level(int n_x, int n_y, NumericVector combined) {
   Function rank("rank");
   Function table("table");
