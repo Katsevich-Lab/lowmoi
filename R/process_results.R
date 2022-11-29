@@ -9,10 +9,17 @@
 #' @export
 process_undercover_result <- function(undercover_res, sample_size_df) {
   # basic processing on the undercover results
-  x <- undercover_res |>
-    replace_slash_w_underscore() |>
-    combine_schraivogel_enhancer_screens() |>
-    update_dataset_and_method_names()
+  if ("schraivogel/enhancer_screen_chr11/gene" %in% undercover_res$dataset &&
+      "schraivogel/enhancer_screen_chr8/gene" %in% undercover_res$dataset) {
+    x <- undercover_res |>
+      replace_slash_w_underscore() |>
+      combine_schraivogel_enhancer_screens() |>
+      update_dataset_and_method_names()
+  } else {
+    x <- undercover_res |>
+      replace_slash_w_underscore() |>
+      update_dataset_and_method_names()
+  }
 
   # wrange the sample size df
   sample_size_df_nt <- sample_size_df |>
@@ -40,6 +47,55 @@ process_undercover_result <- function(undercover_res, sample_size_df) {
   return(out)
 }
 
+
+#' Process positive control result
+#'
+#' @param pc_res positive control result data frame
+#' @param sample_size_df sample size data frame
+#'
+#' @return a processed `pc_res`
+#' @export
+process_pc_result <- function(pc_res, sample_size_df) {
+  if ("schraivogel/enhancer_screen_chr11/gene" %in% pc_res$dataset &&
+      "schraivogel/enhancer_screen_chr8/gene" %in% pc_res$dataset) {
+    x <- pc_res |>
+      replace_slash_w_underscore() |>
+      combine_schraivogel_enhancer_screens() |>
+      update_dataset_and_method_names()
+  } else {
+    x <- pc_res |>
+      replace_slash_w_underscore() |>
+      update_dataset_and_method_names()
+  }
+
+  sample_size_df_pc <- sample_size_df |>
+    filter(feature_id %in% unique(pc_res$response_id),
+           dataset_concat %in% unique(pc_res$dataset)) |>
+    dplyr::mutate(dataset = dataset_concat,
+                  dataset_concat = NULL, paper = NULL, modality = NULL) |>
+    dplyr::rename(grna_group = target, response_id = feature_id) |>
+    replace_slash_w_underscore() |>
+    combine_schraivogel_enhancer_screens()
+
+  control_sample_size_df <- sample_size_df_pc |>
+    filter(grna_group == "non-targeting") |>
+    group_by(response_id, dataset) |>
+    summarize(n_control = sum(n_nonzero_cells))
+
+  to_join <- sample_size_df_pc |>
+    group_by(grna_group, response_id, dataset) |>
+    summarize(n_treatment = sum(n_nonzero_cells)) |>
+    select(response_id, grna_group, n_treatment, dataset)
+
+  pc_res_w_ss <- left_join(x = x,
+                           y = to_join,
+                           by = c("grna_group", "response_id", "dataset")) |>
+    left_join(y = control_sample_size_df, by = c("response_id", "dataset"))
+
+  return(pc_res_w_ss)
+}
+
+
 replace_slash_w_underscore <- function(undercover_res) {
   undercover_res |> dplyr::mutate(dataset = gsub(pattern = "/",
                                                  replacement = "_",
@@ -54,6 +110,6 @@ combine_schraivogel_enhancer_screens <- function(undercover_res) {
 
 update_dataset_and_method_names <- function(undercover_res) {
   undercover_res |>
-    dplyr::mutate(dataset_rename = stringr::str_to_title(gsub(pattern = "_", replacement = " ", x = dataset)),
-                  Method = stringr::str_to_title(gsub(pattern = "_", replacement = " ", x = method)))
+    dplyr::mutate(dataset_rename = stringr::str_to_title(gsub(pattern = "_", replacement = " ", x = dataset)) |> factor(),
+                  Method = stringr::str_to_title(gsub(pattern = "_", replacement = " ", x = method)) |> factor())
 }

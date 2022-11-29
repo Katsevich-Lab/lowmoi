@@ -8,8 +8,8 @@ mann_whitney_perm(
   response_odm,
   grna_odm,
   response_grna_group_pairs,
-  B = 10000,
-  progress = FALSE,
+  B = 1000,
+  progress = TRUE,
   full_output = FALSE
 )
 
@@ -17,8 +17,8 @@ mann_whitney_perm(
   response_odm,
   grna_odm,
   response_grna_group_pairs,
-  B = 10000,
-  progress = FALSE,
+  B = 1000,
+  progress = TRUE,
   full_output = FALSE
 )
 }
