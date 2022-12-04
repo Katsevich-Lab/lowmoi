@@ -13,9 +13,9 @@ nb_regression <- function(response_odm, grna_odm, response_grna_group_pairs, pro
   # get the formula
   if (with_covariates) {
     my_formula_str <- response_odm@misc$nb_regression_formula
-    my_formula <- stats::as.formula(paste0("expression ", my_formula_str, " + pert_indicator"))
+    my_formula <- stats::as.formula(paste0("expression ", my_formula_str))
   } else {
-    my_formula <- stats::formula(expression ~ log(n_umis) + pert_indicator)
+    my_formula <- stats::formula(expression ~ log(n_umis))
   }
 
   # define the NB regression test function
@@ -26,11 +26,12 @@ nb_regression <- function(response_odm, grna_odm, response_grna_group_pairs, pro
     est_size <- max(estimate_size(df, my_formula), 0.01)
 
     # fit GLM
-    fit_nb <- VGAM::vglm(formula = my_formula, family = VGAM::negbinomial.size(est_size), data = df)
+    fit_nb <- stats::glm(formula = my_formula, family = MASS::negative.binomial(est_size),  data = df)
 
-    # extract p-value
-    s <- VGAM::summary(fit_nb)
-    p_val <- s@coef3["pert_indicator", "Pr(>|z|)"]
+    # get score-based p-value
+    z <- statmod::glm.scoretest(fit_nb, df$pert_indicator)
+    p_val <- 2 * pnorm(-abs(z), lower.tail = TRUE)
+
     return(p_val)
   }
 
