@@ -45,3 +45,18 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500,
 
   return(res)
 }
+
+
+
+#' SCEPTRE (no covariates)
+#'
+#' Runs SCEPTRE w/o covariates
+#'
+#' @inheritParams sceptre
+#'
+#' @export
+sceptre_no_covariates <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500, output_amount = 1, distilled = FALSE) {
+  sceptre(response_odm = response_odm, grna_odm = grna_odm,
+          response_grna_group_pairs = response_grna_group_pairs,
+          B = B, output_amount = output_amount, distilled = distilled, with_covariates = FALSE)
+}

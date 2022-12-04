@@ -10,7 +10,8 @@ sceptre(
   response_grna_group_pairs,
   B = 2500,
   output_amount = 1,
-  with_covariates = TRUE
+  with_covariates = TRUE,
+  distilled = FALSE
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ assignments (logical)}
 \item{output_amount}{amount of output to return from function (ranging from 1-3)}
 
 \item{with_covariates}{should covariates (beyond log-transformed library size) be included in the model?}
+
+\item{distilled}{use the distilled statistic (TRUE) or the full statistic (FALSE)?}
 }
 \value{
 a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.
