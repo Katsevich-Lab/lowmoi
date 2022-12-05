@@ -8,9 +8,8 @@
 #' @param with_covariates should covariates (beyond log-transformed library size) be included in the model?
 #' @param distilled use the distilled statistic (TRUE) or the full statistic (FALSE)?
 #' @export
-sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500, output_amount = 1, with_covariates = TRUE, distilled = FALSE) {
+sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500, with_covariates = TRUE, distilled = FALSE) {
   if (!is.numeric(B)) B <- as.integer(B)
-  if (!is.numeric(output_amount)) output_amount <- as.integer(output_amount)
   if (!is.logical(with_covariates)) with_covariates <- as.logical(with_covariates)
   if (!is.logical(distilled)) distilled <- as.logical(distilled)
 
@@ -34,15 +33,8 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500,
                                        grna_group_column_name = "target",
                                        B = B,
                                        side = "both",
-                                       output_amount = output_amount,
                                        in_memory = TRUE,
                                        statistic = if (distilled) "distilled" else "full") |> as.data.frame()
-
-  # select p_val, grna_grop, response_id
-  if (output_amount == 1) {
-    res <- res |> dplyr::select(response_id, grna_group, p_value)
-  }
-
   return(res)
 }
 
