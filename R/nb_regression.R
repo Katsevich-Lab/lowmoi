@@ -26,11 +26,11 @@ nb_regression <- function(response_odm, grna_odm, response_grna_group_pairs, pro
     est_size <- max(estimate_size(df, my_formula), 0.01)
 
     # fit GLM
-    fit_nb <- stats::glm(formula = my_formula, family = MASS::negative.binomial(est_size),  data = df)
-
-    # get score-based p-value
-    z <- statmod::glm.scoretest(fit_nb, df$pert_indicator)
-    p_val <- 2 * pnorm(-abs(z), lower.tail = TRUE)
+    p_val <- tryCatch({
+      fit_nb <- stats::glm(formula = my_formula, family = MASS::negative.binomial(est_size),  data = df)
+      z <- statmod::glm.scoretest(fit_nb, df$pert_indicator)
+      2 * pnorm(-abs(z), lower.tail = TRUE)
+    }, error = function(e) 1, warning = function(e) 1)
 
     return(p_val)
   }
@@ -81,7 +81,7 @@ create_design_matrix <- function(target_cells, control_cells, target_cell_indice
 #' @export
 nb_regression_w_covariates <- function(response_odm, grna_odm, response_grna_group_pairs, progress = TRUE) {
   nb_regression(response_odm = response_odm,
-                grna_odm =grna_odm,
+                grna_odm = grna_odm,
                 response_grna_group_pairs = response_grna_group_pairs,
                 progress = progress,
                 with_covariates = TRUE)
