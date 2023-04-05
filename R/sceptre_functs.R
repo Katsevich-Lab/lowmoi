@@ -1,21 +1,21 @@
-#' sceptre (v2)
-#'
-#' Implements sceptre2.
+#' Implements sceptre (v3)
 #'
 #' @inherit abstract_interface
-#' @param B number of resamples to draw
-#' @param output_amount amount of output to return from function (ranging from 1-3)
-#' @param with_covariates should covariates (beyond log-transformed library size) be included in the model?
-#' @param distilled use the distilled statistic (TRUE) or the full statistic (FALSE)?
+#'
 #' @export
-sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500, with_covariates = TRUE, distilled = FALSE) {
-  if (!is.numeric(B)) B <- as.integer(B)
-  if (!is.logical(with_covariates)) with_covariates <- as.logical(with_covariates)
-  if (!is.logical(distilled)) distilled <- as.logical(distilled)
-
-  # construct the multimodal ODM
-  mm_odm <- ondisc::multimodal_ondisc_matrix(list(response = response_odm, grna = grna_odm)) |>
-    lowmoi::process_multimodal_odm()
+sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_covariates = TRUE) {
+  # load the gene and grna matrix into memory
+  response_matrix <- load_whole_odm(response_odm)
+  grna_matrix <- load_whole_odm(grna_odm)
+  grna_feature_df <- grna_odm |> ondisc::get_feature_covariates()
+  grna_group_data_frame <- data.frame(grna_id = rownames(grna_feature_df),
+                                      grna_group = grna_feature_df$target)
+  # construct the multimodal odm
+  covariate_data_frame <- ondisc::multimodal_ondisc_matrix(list(response = response_odm,
+                                                            grna = grna_odm)) |>
+    lowmoi::process_multimodal_odm() |>
+    ondisc::get_cell_covariates()
+  formula_object <- response_odm@misc$sceptre_formula
 
   # get the formula
   if (with_covariates) {
@@ -24,31 +24,19 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500,
     form <- stats::formula(~log(response_n_umis))
   }
 
-  # call function
-  res <- sceptre2::run_sceptre_low_moi(mm_odm = mm_odm,
-                                       response_grna_group_pairs = response_grna_group_pairs,
-                                       form = form,
-                                       response_modality_name = "response",
-                                       grna_modality_name = "grna",
-                                       grna_group_column_name = "target",
-                                       B = B,
-                                       side = "both",
-                                       in_memory = TRUE,
-                                       statistic = if (distilled) "distilled" else "full") |> as.data.frame()
+  # run sceptre
+  res <- sceptre::run_sceptre_lowmoi(response_matrix = response_matrix,
+                              grna_matrix = grna_matrix,
+                              covariate_data_frame = covariate_data_frame,
+                              grna_group_data_frame = grna_group_data_frame,
+                              formula_object = formula_object,
+                              response_grna_group_pairs = response_grna_group_pairs,
+                              calibration_check = FALSE) |>
+    dplyr::select(response_id, grna_group, p_value)
   return(res)
 }
 
 
-
-#' SCEPTRE (no covariates)
-#'
-#' Runs SCEPTRE w/o covariates
-#'
-#' @inheritParams sceptre
-#'
-#' @export
-sceptre_no_covariates <- function(response_odm, grna_odm, response_grna_group_pairs, B = 2500, distilled = FALSE) {
-  sceptre(response_odm = response_odm, grna_odm = grna_odm,
-          response_grna_group_pairs = response_grna_group_pairs,
-          B = B, distilled = distilled, with_covariates = FALSE)
+sceptre_no_covariates <- function(response_odm, grna_odm, response_grna_group_pairs) {
+  sceptre(response_odm, grna_odm, response_grna_group_pairs)
 }

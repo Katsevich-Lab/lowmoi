@@ -29,7 +29,6 @@ load_whole_odm <- function(odm, csc_format = TRUE) {
 }
 
 
-
 #' Load dataset modality
 #'
 #' @param data_fp (relative) file path to dataset modality

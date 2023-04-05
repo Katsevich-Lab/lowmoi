@@ -4,7 +4,7 @@
 #' @inherit abstract_interface
 #' @param n_rep number of permutations to use
 #' @export
-mimosca <- function(response_odm, grna_odm, response_grna_group_pairs, n_rep = 50) {
+mimosca <- function(response_odm, grna_odm, response_grna_group_pairs, n_rep = 60) {
   if (is.character(n_rep)) n_rep <- as.integer(n_rep)
   # load the gene and grna data, transposing the matrices (as is required by mimosca)
   response_mat_t <- Matrix::t(load_whole_odm(response_odm))
