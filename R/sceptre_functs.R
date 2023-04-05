@@ -11,10 +11,11 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_cova
   grna_group_data_frame <- data.frame(grna_id = rownames(grna_feature_df),
                                       grna_group = grna_feature_df$target)
   # construct the multimodal odm
-  covariate_data_frame <- ondisc::multimodal_ondisc_matrix(list(response = response_odm,
+  mm_odm <- ondisc::multimodal_ondisc_matrix(list(response = response_odm,
                                                             grna = grna_odm)) |>
-    lowmoi::process_multimodal_odm() |>
-    ondisc::get_cell_covariates()
+    lowmoi::process_multimodal_odm()
+
+  covariate_data_frame <- mm_odm |> ondisc::get_cell_covariates()
   formula_object <- response_odm@misc$sceptre_formula
 
   # get the formula
