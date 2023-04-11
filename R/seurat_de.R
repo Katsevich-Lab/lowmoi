@@ -47,3 +47,5 @@ seurat_de <- function(response_odm, grna_odm, response_grna_group_pairs) {
   res <- dplyr::bind_rows(l = res_list)
   return(res)
 }
+
+

@@ -44,7 +44,7 @@ feature covariate matrix of \code{grna_odm}, \code{target_type} is ignored.
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 grna_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 response_grna_group_pairs <-
- expand.grid(grna_group = c("CCNE2", "HS2"),
+ expand.grid(grna_group = c("OXR1-TSS", "LRRCC1-TSS"),
              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 
 # a frangieh example

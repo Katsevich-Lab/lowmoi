@@ -5,7 +5,7 @@
 \title{Mimosca
 Implements the MIMOSCA method.}
 \usage{
-mimosca(response_odm, grna_odm, response_grna_group_pairs, n_rep = 50)
+mimosca(response_odm, grna_odm, response_grna_group_pairs, n_rep = 60)
 }
 \arguments{
 \item{response_odm}{an expression ODM of responses (typically genes)}
@@ -37,7 +37,7 @@ feature covariate matrix of \code{grna_odm}, \code{target_type} is ignored.
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 grna_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 response_grna_group_pairs <-
- expand.grid(grna_group = c("CCNE2", "HS2"),
+ expand.grid(grna_group = c("OXR1-TSS", "LRRCC1-TSS"),
              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 
 # a frangieh example

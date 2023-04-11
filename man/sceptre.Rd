@@ -2,16 +2,14 @@
 % Please edit documentation in R/sceptre_functs.R
 \name{sceptre}
 \alias{sceptre}
-\title{sceptre (v2)}
+\title{Implements sceptre (v3)}
 \usage{
 sceptre(
   response_odm,
   grna_odm,
   response_grna_group_pairs,
-  B = 2500,
-  output_amount = 1,
   with_covariates = TRUE,
-  distilled = FALSE
+  test_stat = "full"
 )
 }
 \arguments{
@@ -22,20 +20,12 @@ assignments (logical)}
 
 \item{response_grna_group_pairs}{a data frame with columns \code{response_id} and
 \code{grna_group} giving the response ID / grna group pairs to analyze.}
-
-\item{B}{number of resamples to draw}
-
-\item{output_amount}{amount of output to return from function (ranging from 1-3)}
-
-\item{with_covariates}{should covariates (beyond log-transformed library size) be included in the model?}
-
-\item{distilled}{use the distilled statistic (TRUE) or the full statistic (FALSE)?}
 }
 \value{
 a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.
 }
 \description{
-Implements sceptre2.
+Abstract interface that all methods in the \code{lowmoi} package must satisfy.
 }
 \details{
 The \code{grna_group} column of \code{response_grna_group_pairs} contains the names of grna groups.
@@ -50,7 +40,7 @@ feature covariate matrix of \code{grna_odm}, \code{target_type} is ignored.
 response_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/gene")
 grna_odm <- load_dataset_modality("schraivogel/ground_truth_tapseq/grna_assignment")
 response_grna_group_pairs <-
- expand.grid(grna_group = c("CCNE2", "HS2"),
+ expand.grid(grna_group = c("OXR1-TSS", "LRRCC1-TSS"),
              response_id = sample(ondisc::get_feature_ids(response_odm), 50))
 
 # a frangieh example

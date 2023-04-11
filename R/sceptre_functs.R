@@ -3,7 +3,7 @@
 #' @inherit abstract_interface
 #'
 #' @export
-sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_covariates = TRUE) {
+sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_covariates = TRUE, test_stat = "full") {
   # load the gene and grna matrix into memory
   response_matrix <- load_whole_odm(response_odm)
   grna_matrix <- load_whole_odm(grna_odm)
@@ -32,7 +32,8 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_cova
                               grna_group_data_frame = grna_group_data_frame,
                               formula_object = formula_object,
                               response_grna_group_pairs = response_grna_group_pairs,
-                              calibration_check = FALSE) |>
+                              calibration_check = FALSE,
+                              test_stat = test_stat) |>
     dplyr::select(response_id, grna_group, p_value)
   return(res)
 }
