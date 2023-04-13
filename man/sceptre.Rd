@@ -9,7 +9,8 @@ sceptre(
   grna_odm,
   response_grna_group_pairs,
   with_covariates = TRUE,
-  test_stat = "full"
+  test_stat = "full",
+  print_progress = TRUE
 )
 }
 \arguments{
