@@ -383,25 +383,3 @@ get_sceptre_function_args_for_pair <- function(response_id, undercover_grna, dat
               output_amount = output_amount)
   return(ret)
 }
-
-
-
-#' Generate all pairs
-#'
-#' Generates the entire set of response-gRNA group pairs from an input response ODM and gRNA ODM.
-#'
-#' @param response_odm a response ODM
-#' @param grna_odm a gRNA ODM
-#'
-#' @return a data frame with columns "response_id" and "grna_group" containing all pairs
-#' @export
-generate_all_pairs <- function(response_odm, grna_odm) {
-  response_ids <- ondisc::get_feature_ids(response_odm)
-  grna_group_data_frame <- grna_odm |> get_feature_covariates()
-  grna_group_data_frame <- data.frame(grna_id = rownames(grna_group_data_frame),
-                                      grna_group = grna_group_data_frame$target)
-  grna_groups <-  grna_group_data_frame |>
-    dplyr::filter(grna_group != "non-targeting") |>
-    dplyr::pull(grna_group) |> unique() |> factor()
-  expand.grid(response_id = response_ids, grna_group = grna_groups)
-}
