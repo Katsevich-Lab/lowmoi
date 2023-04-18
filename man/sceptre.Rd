@@ -9,8 +9,6 @@ sceptre(
   grna_odm,
   response_grna_group_pairs,
   with_covariates = TRUE,
-  regression_method = "poisson_glm",
-  discovery_test_stat = "approximate",
   print_progress = TRUE
 )
 }
