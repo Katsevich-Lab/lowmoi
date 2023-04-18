@@ -36,6 +36,7 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_cova
 }
 
 
+#' @export
 sceptre_no_covariates <- function(response_odm, grna_odm, response_grna_group_pairs) {
   sceptre(response_odm, grna_odm, response_grna_group_pairs, with_covariates = FALSE)
 }
