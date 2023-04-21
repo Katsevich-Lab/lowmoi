@@ -9,26 +9,21 @@
 #' @export
 process_undercover_result <- function(undercover_res, sample_size_df) {
   # basic processing on the undercover results
-  if ("schraivogel/enhancer_screen_chr11/gene" %in% undercover_res$dataset &&
-      "schraivogel/enhancer_screen_chr8/gene" %in% undercover_res$dataset) {
-    x <- undercover_res |>
-      replace_slash_w_underscore() |>
-      combine_schraivogel_enhancer_screens() |>
-      update_dataset_and_method_names()
-  } else {
-    x <- undercover_res |>
-      replace_slash_w_underscore() |>
-      update_dataset_and_method_names()
-  }
+  #if ("schraivogel/enhancer_screen_chr11/gene" %in% undercover_res$dataset &&
+  #    "schraivogel/enhancer_screen_chr8/gene" %in% undercover_res$dataset) {
+  #  x <- undercover_res |>
+  #    replace_slash_w_underscore() |>
+  #    combine_schraivogel_enhancer_screens() |>
+  #    update_dataset_and_method_names()
+  #} else {
+  #  x <- undercover_res |>
+  #    replace_slash_w_underscore() |>
+  #    update_dataset_and_method_names()
+  #}
 
   # wrange the sample size df
   sample_size_df_nt <- sample_size_df |>
-    dplyr::filter(target == "non-targeting") |>
-    dplyr::mutate(dataset = dataset_concat,
-                  dataset_concat = NULL, paper = NULL, modality = NULL) |>
-    dplyr::rename(grna_group = target, response_id = feature_id) |>
-    replace_slash_w_underscore() |>
-    combine_schraivogel_enhancer_screens()
+    dplyr::filter(grna_group == "non-targeting")
   ntc_effective_samp_size <- sample_size_df_nt |>
     dplyr::group_by(response_id, dataset) |>
     dplyr::summarize(effective_samp_size = sum(n_nonzero_cells))
@@ -40,10 +35,16 @@ process_undercover_result <- function(undercover_res, sample_size_df) {
     dplyr::rename("undercover_grna" = "grna_id") |>
     dplyr::select(response_id, undercover_grna, dataset,
                   n_nonzero_treatment, n_nonzero_control, effective_samp_size)
-
-  out <- dplyr::left_join(x = x,
+  out <- dplyr::left_join(x = undercover_res,
                           y = sample_size_df_nt,
-                          by = c("response_id", "undercover_grna", "dataset"))
+                          by = c("response_id", "undercover_grna", "dataset")) |>
+    replace_slash_w_underscore()
+
+  if ("schraivogel_enhancer_screen_chr11_gene" %in% out$dataset &&
+      "schraivogel_enhancer_screen_chr8_gene" %in% out$dataset) {
+    out <- out |> combine_schraivogel_enhancer_screens()
+  }
+  out <- out |> update_dataset_and_method_names()
   return(out)
 }
 
