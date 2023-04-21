@@ -56,45 +56,27 @@ process_undercover_result <- function(undercover_res, sample_size_df) {
 #' @return a processed `pc_res`
 #' @export
 process_pc_result <- function(pc_res, sample_size_df) {
-  if ("schraivogel/enhancer_screen_chr11/gene" %in% pc_res$dataset &&
-      "schraivogel/enhancer_screen_chr8/gene" %in% pc_res$dataset) {
-    x <- pc_res |>
-      replace_slash_w_underscore() |>
-      combine_schraivogel_enhancer_screens() |>
-      update_dataset_and_method_names()
-  } else {
-    x <- pc_res |>
-      replace_slash_w_underscore() |>
-      update_dataset_and_method_names()
-  }
-
   sample_size_df_pc <- sample_size_df |>
-    filter(feature_id %in% unique(pc_res$response_id),
-           dataset_concat %in% unique(pc_res$dataset)) |>
-    dplyr::mutate(dataset = dataset_concat,
-                  dataset_concat = NULL, paper = NULL, modality = NULL) |>
-    dplyr::rename(grna_group = target, response_id = feature_id) |>
-    replace_slash_w_underscore()
-  if ("schraivogel_enhancer_screen_chr11_gene" %in% unique(sample_size_df_pc$dataset) ||
-      "schraivogel_enhancer_screen_chr8_gene" %in% unique(sample_size_df_pc$dataset)) {
-    sample_size_df_pc <- sample_size_df_pc |> combine_schraivogel_enhancer_screens()
-  }
-
-  control_sample_size_df <- sample_size_df_pc |>
+    filter(response_id %in% unique(pc_res$response_id),
+           dataset %in% unique(pc_res$dataset))
+  control_sample_size_df <- sample_size_df |>
     filter(grna_group == "non-targeting") |>
     group_by(response_id, dataset) |>
     summarize(n_control = sum(n_nonzero_cells))
-
   to_join <- sample_size_df_pc |>
     group_by(grna_group, response_id, dataset) |>
     summarize(n_treatment = sum(n_nonzero_cells)) |>
     select(response_id, grna_group, n_treatment, dataset)
-
-  pc_res_w_ss <- left_join(x = x,
+  pc_res_w_ss <- left_join(x = pc_res,
                            y = to_join,
                            by = c("grna_group", "response_id", "dataset")) |>
-    left_join(y = control_sample_size_df, by = c("response_id", "dataset"))
-
+    left_join(y = control_sample_size_df, by = c("response_id", "dataset")) |>
+    replace_slash_w_underscore()
+  if ("schraivogel_enhancer_screen_chr11_gene" %in% pc_res$dataset &&
+      "schraivogel_enhancer_screen_chr8_gene" %in% pc_res$dataset) {
+    pc_res_w_ss <- pc_res_w_ss |> combine_schraivogel_enhancer_screens()
+  }
+  pc_res_w_ss <- pc_res_w_ss |> update_dataset_and_method_names()
   return(pc_res_w_ss)
 }
 
