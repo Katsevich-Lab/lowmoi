@@ -74,8 +74,11 @@ process_pc_result <- function(pc_res, sample_size_df) {
     dplyr::mutate(dataset = dataset_concat,
                   dataset_concat = NULL, paper = NULL, modality = NULL) |>
     dplyr::rename(grna_group = target, response_id = feature_id) |>
-    replace_slash_w_underscore() |>
-    combine_schraivogel_enhancer_screens()
+    replace_slash_w_underscore()
+  if ("schraivogel_enhancer_screen_chr11_gene" %in% unique(sample_size_df_pc$dataset) ||
+      "schraivogel_enhancer_screen_chr8_gene" %in% unique(sample_size_df_pc$dataset)) {
+    sample_size_df_pc <- sample_size_df_pc |> combine_schraivogel_enhancer_screens()
+  }
 
   control_sample_size_df <- sample_size_df_pc |>
     filter(grna_group == "non-targeting") |>
