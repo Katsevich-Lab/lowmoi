@@ -8,19 +8,6 @@
 #' @return a proccessed `undercover_res`
 #' @export
 process_undercover_result <- function(undercover_res, sample_size_df) {
-  # basic processing on the undercover results
-  #if ("schraivogel/enhancer_screen_chr11/gene" %in% undercover_res$dataset &&
-  #    "schraivogel/enhancer_screen_chr8/gene" %in% undercover_res$dataset) {
-  #  x <- undercover_res |>
-  #    replace_slash_w_underscore() |>
-  #    combine_schraivogel_enhancer_screens() |>
-  #    update_dataset_and_method_names()
-  #} else {
-  #  x <- undercover_res |>
-  #    replace_slash_w_underscore() |>
-  #    update_dataset_and_method_names()
-  #}
-
   # wrange the sample size df
   sample_size_df_nt <- sample_size_df |>
     dplyr::filter(grna_group == "non-targeting")
@@ -73,8 +60,8 @@ process_pc_result <- function(pc_res, sample_size_df) {
                            by = c("grna_group", "response_id", "dataset")) |>
     left_join(y = control_sample_size_df, by = c("response_id", "dataset")) |>
     replace_slash_w_underscore()
-  if ("schraivogel_enhancer_screen_chr11_gene" %in% pc_res$dataset &&
-      "schraivogel_enhancer_screen_chr8_gene" %in% pc_res$dataset) {
+  if ("schraivogel_enhancer_screen_chr8_gene" %in% pc_res_w_ss$dataset &&
+      "schraivogel_enhancer_screen_chr11_gene" %in% pc_res_w_ss$dataset) {
     pc_res_w_ss <- pc_res_w_ss |> combine_schraivogel_enhancer_screens()
   }
   pc_res_w_ss <- pc_res_w_ss |> update_dataset_and_method_names()
