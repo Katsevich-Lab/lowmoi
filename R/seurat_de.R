@@ -1,4 +1,4 @@
-seurat_de_workhorse <- function(response_odm, grna_odm, response_grna_group_pairs, method) {
+seurat_de_workhorse <- function(response_odm, grna_odm, response_grna_group_pairs, method, normalize) {
   # load response data
   response_mat <- load_whole_odm(response_odm)
 
@@ -13,6 +13,7 @@ seurat_de_workhorse <- function(response_odm, grna_odm, response_grna_group_pair
   seurat_obj <- Seurat::CreateSeuratObject(counts = response_mat,
                                            assay = "RNA",
                                            meta.data = cell_metadata)
+  if (normalize) seurat_obj <- Seurat::NormalizeData(seurat_obj)
   rm(response_mat)
 
   # set the "Idents" to perturbation
@@ -48,7 +49,7 @@ seurat_de_workhorse <- function(response_odm, grna_odm, response_grna_group_pair
 #'
 #' @export
 seurat_de_nb <- function(response_odm, grna_odm, response_grna_group_pairs) {
-  seurat_de_workhorse(response_odm, grna_odm, response_grna_group_pairs, "negbinom")
+  seurat_de_workhorse(response_odm, grna_odm, response_grna_group_pairs, "negbinom", FALSE)
 }
 
 
@@ -59,5 +60,5 @@ seurat_de_nb <- function(response_odm, grna_odm, response_grna_group_pairs) {
 #'
 #' @export
 seurat_de <- function(response_odm, grna_odm, response_grna_group_pairs) {
-  seurat_de_workhorse(response_odm, grna_odm, response_grna_group_pairs, "wilcox")
+  seurat_de_workhorse(response_odm, grna_odm, response_grna_group_pairs, "wilcox", TRUE)
 }
