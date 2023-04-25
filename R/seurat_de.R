@@ -1,10 +1,4 @@
-#' Seurat DE
-#'
-#' Implements the Seurat differential expression method.
-#' @inherit abstract_interface
-#'
-#' @export
-seurat_de <- function(response_odm, grna_odm, response_grna_group_pairs) {
+seurat_de_workhorse <- function(response_odm, grna_odm, response_grna_group_pairs, method) {
   # load response data
   response_mat <- load_whole_odm(response_odm)
 
@@ -28,9 +22,10 @@ seurat_de <- function(response_odm, grna_odm, response_grna_group_pairs) {
   unique_grna_groups <- as.character(unique(response_grna_group_pairs$grna_group))
   res_list <- lapply(X = unique_grna_groups, FUN = function(curr_grna_group) {
     curr_response_grna_group_pairs <- dplyr::filter(response_grna_group_pairs, grna_group == curr_grna_group)
-    markers_res <- Seurat::FindMarkers(object = seurat_obj[curr_response_grna_group_pairs$response_id,],
-                                       ident.1 = curr_grna_group, ident.2 = "non-targeting", only.pos = FALSE,
-                                       logfc.threshold = 0.0, test.use = "wilcox", min.pct = 0.0)
+    markers_res <- suppressWarnings(Seurat::FindMarkers(object = seurat_obj[curr_response_grna_group_pairs$response_id,],
+                                       ident.1 = curr_grna_group,
+                                       ident.2 = "non-targeting", only.pos = FALSE,
+                                       logfc.threshold = 0.0, test.use = method, min.pct = 0.0))
 
     if (nrow(markers_res) == 0) {
       ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
@@ -46,3 +41,23 @@ seurat_de <- function(response_odm, grna_odm, response_grna_group_pairs) {
 }
 
 
+#' Seurat DE
+#'
+#' Implements the NB regression-based Seurat differential expression method.
+#' @inherit abstract_interface
+#'
+#' @export
+seurat_de_nb <- function(response_odm, grna_odm, response_grna_group_pairs) {
+  seurat_de_workhorse(response_odm, grna_odm, response_grna_group_pairs, "negbinom")
+}
+
+
+#' Seurat DE
+#'
+#' Implements the Seurat differential expression method. The (default) wilcox test is used,
+#' @inherit abstract_interface
+#'
+#' @export
+seurat_de <- function(response_odm, grna_odm, response_grna_group_pairs) {
+  seurat_de_workhorse(response_odm, grna_odm, response_grna_group_pairs, "wilcox")
+}

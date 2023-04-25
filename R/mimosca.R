@@ -27,6 +27,7 @@ mimosca <- function(response_odm, grna_odm, response_grna_group_pairs, n_rep = 6
   # apply mimosca, looping over unique grna groups
   unique_grna_groups <- as.character(unique(response_grna_group_pairs$grna_group))
   res_list <- lapply(unique_grna_groups, function(curr_grna_group) {
+      print(paste0("Working on ", curr_grna_group))
       cov_ind <- which(curr_grna_group ==  colnames(design_mat)) - 1L
       p_vals <- run_mimosca(get_sparse_matrix_pieces(response_mat_t),
                             get_sparse_matrix_pieces(design_mat),
