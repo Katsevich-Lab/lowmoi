@@ -30,7 +30,7 @@ seurat_de <- function(response_odm, grna_odm, response_grna_group_pairs) {
     curr_response_grna_group_pairs <- dplyr::filter(response_grna_group_pairs, grna_group == curr_grna_group)
     markers_res <- Seurat::FindMarkers(object = seurat_obj[curr_response_grna_group_pairs$response_id,],
                                        ident.1 = curr_grna_group, ident.2 = "non-targeting", only.pos = FALSE,
-                                       logfc.threshold = 0.0, test.use = "DESeq2", min.pct = 0.0)
+                                       logfc.threshold = 0.0, test.use = "wilcox", min.pct = 0.0)
 
     if (nrow(markers_res) == 0) {
       ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
