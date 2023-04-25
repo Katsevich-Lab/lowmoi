@@ -19,7 +19,7 @@ liscovitch_method <- function(response_odm, grna_odm, response_grna_group_pairs)
   lib_size_col_name <- if ("n_fragments" %in% colnames(cell_covariates)) "n_fragments" else "n_umis"
   cell_lib_sizes <- cell_covariates[[lib_size_col_name]]
   # divide by the number of fragments per cell
-  exp_data_norm <- Matrix::t(Matrix::t(exp_data)/cell_lib_sizes)
+  exp_data_norm <- Matrix::t(exp_data)/cell_lib_sizes
   rm(exp_data)
 
   # assign grnas to cells; obtain the indexes of the negative control grnas
@@ -30,13 +30,14 @@ liscovitch_method <- function(response_odm, grna_odm, response_grna_group_pairs)
   p_vals <- apply(X = response_grna_group_pairs, MARGIN = 1, FUN = function(r) {
     grna <- as.character(r[["grna_group"]])
     response <- as.character(r[["response_id"]])
-    response_row <- exp_data_norm[response,]
+    response_row <- exp_data_norm[,response]
     response_row_scale <- scale(response_row)[,1]
 
     target_cells <- response_row_scale[grna == grna_targets]
     control_cells <- response_row_scale[neg_control_idxs]
-    fit <- stats::t.test(target_cells, control_cells)
-    fit$p.value
+    p_value <- tryCatch(stats::t.test(target_cells, control_cells)$p.value,
+                        error = function(e) NA, warning = function(w) NA)
+    p_value
   })
   response_grna_group_pairs$p_value <- p_vals
   return(response_grna_group_pairs)
