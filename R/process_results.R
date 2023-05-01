@@ -31,7 +31,10 @@ process_undercover_result <- function(undercover_res, sample_size_df) {
       "schraivogel_enhancer_screen_chr8_gene" %in% out$dataset) {
     out <- out |> combine_schraivogel_enhancer_screens()
   }
-  out <- out |> update_dataset_and_method_names()
+
+  out <- out |>
+    update_dataset_and_method_names() |>
+    dplyr::mutate(p_value = ifelse(p_value <= 1e-250, 1e-250, p_value))
   return(out)
 }
 
@@ -64,7 +67,9 @@ process_pc_result <- function(pc_res, sample_size_df) {
       "schraivogel_enhancer_screen_chr11_gene" %in% pc_res_w_ss$dataset) {
     pc_res_w_ss <- pc_res_w_ss |> combine_schraivogel_enhancer_screens()
   }
-  pc_res_w_ss <- pc_res_w_ss |> update_dataset_and_method_names()
+  pc_res_w_ss <- pc_res_w_ss |>
+    update_dataset_and_method_names() |>
+    dplyr::mutate(p_value = ifelse(p_value <= 1e-250, 1e-250, p_value))
   return(pc_res_w_ss)
 }
 
@@ -83,6 +88,34 @@ combine_schraivogel_enhancer_screens <- function(undercover_res) {
 
 update_dataset_and_method_names <- function(undercover_res) {
   undercover_res |>
-    dplyr::mutate(dataset_rename = stringr::str_to_title(gsub(pattern = "_", replacement = " ", x = dataset)) |> factor(),
-                  Method = stringr::str_to_title(gsub(pattern = "_", replacement = " ", x = method)) |> factor())
-}
+    mutate(Method = forcats::fct_recode(method,
+                                        "SCEPTRE" = "sceptre",
+                                        "SCEPTRE (no covariates)" = "sceptre_no_covariates",
+                                        "NB regression (w/ covariates)" = "nb_regression_w_covariates",
+                                        "NB regression (no covariates)" = "nb_regression_no_covariates",
+                                        "Seurat-Wilcox" = "seurat_de",
+                                        "Seurat-NB" = "seurat_de_nb",
+                                        "t-test" = "liscovitch_method",
+                                        "KS test" = "weissman_method",
+                                        "MAST" = "schraivogel_method",
+                                        "MIMOSCA" = "mimosca") |>
+             forcats::fct_relevel(c("SCEPTRE",
+                                    "SCEPTRE (no covariates)",
+                                    "NB regression (no covariates)",
+                                    "NB regression (w/ covariates)",
+                                    "Seurat-Wilcox",
+                                    "Seurat-NB",
+                                    "t-test",
+                                    "KS test",
+                                    "MAST",
+                                    "MIMOSCA"))) |>
+    mutate(dataset_rename = forcats::fct_recode(dataset,
+                                                "Frangieh (Co Culture)" = "frangieh_co_culture_gene",
+                                                "Frangieh (Control)" = "frangieh_control_gene",
+                                                "Frangieh (IFN-\u03B3)" = "frangieh_ifn_gamma_gene",
+                                                "Papalexi (Gene)" = "papalexi_eccite_screen_gene",
+                                                "Papalexi (Protein)" = "papalexi_eccite_screen_protein",
+                                                "Schraivogel" = "schraivogel_enhancer_screen",
+                                                "Simulated" = "simulated_experiment_1_gene"
+    ))
+  }

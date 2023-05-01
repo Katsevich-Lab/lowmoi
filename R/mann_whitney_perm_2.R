@@ -27,14 +27,14 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
   # obtain the random indexes
   unique_grna_groups <- as.character(unique(response_grna_group_pairs$grna_group))
   grna_targets <- get_target_assignments_via_max_op(grna_odm)
-  grna_group_info <- sceptre2:::get_grna_group_info(grna_group_assignments = grna_targets,
-                                                    input_grna_groups = unique_grna_groups)
+  grna_group_info <- get_grna_group_info(grna_group_assignments = grna_targets,
+                                         input_grna_groups = unique_grna_groups)
   random_idxs <- lapply(X = unique_grna_groups, function(unique_grna_group) {
    cbind(matrix(data = seq(1, grna_group_info$n_cells_per_grna[[unique_grna_group]]),
                 ncol = 1),
-    sceptre2:::get_grna_permutation_idxs(n_cells_per_grna = grna_group_info$n_cells_per_grna,
-                                         unique_grna = unique_grna_group,
-                                         B = B))
+    get_grna_permutation_idxs(n_cells_per_grna = grna_group_info$n_cells_per_grna,
+                              unique_grna = unique_grna_group,
+                              B = B))
   }) |> stats::setNames(unique_grna_groups)
 
   # define the permutation test function
@@ -68,7 +68,7 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
     # empirical p-value
     set.seed(4)
     z_null_jitter <- z_null + runif(n = B, min = -1e-5, max = 1e-5)
-    p_emp <- sceptre2:::compute_empirical_p_value(z_star, z_null_jitter, side = "both")
+    p_emp <- compute_empirical_p_value(z_star, z_null_jitter, side = "both")
 
     # R's p-value
     p_r <- wilcox.test(x, y)$p.value
@@ -90,4 +90,52 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
                                   response_grna_group_pairs, two_sample_test,
                                   progress, "ntc", TRUE)
   return(res)
+}
+
+
+run_mw_test <- function(x, y) {
+  r <- c(x, y)
+  r <- rank(r)
+  n.x <- as.double(length(x))
+  n.y <- as.double(length(y))
+  STATISTIC <- c(W = sum(r[seq_along(x)]) - n.x * (n.x + 1)/2)
+  NTIES <- table(r)
+  z <- STATISTIC - n.x * n.y/2
+  SIGMA <- sqrt((n.x * n.y/12) * ((n.x + n.y + 1) -  sum(NTIES^3 - NTIES)/((n.x + n.y) * (n.x + n.y - 1))))
+  CORRECTION <- sign(z) * 0.5
+  z <- (z - CORRECTION)/SIGMA
+  return(z[[1]])
+}
+
+
+get_grna_group_info <- function(grna_group_assignments, input_grna_groups) {
+  unique_grnas <- c(input_grna_groups |> stats::setNames(input_grna_groups),
+                    "non-targeting" = "non-targeting")
+  # get the indices of each gRNA
+  grna_specific_idxs <- lapply(unique_grnas, function(unique_grna) {
+    which(grna_group_assignments == unique_grna)
+  })
+  # get the number of cells per gRNA; also record the number of NT cells
+  n_cells_per_grna <- table(grna_group_assignments)[unique_grnas]
+  return(list(grna_specific_idxs = grna_specific_idxs,
+              n_cells_per_grna = n_cells_per_grna))
+}
+
+
+get_grna_permutation_idxs <- function(n_cells_per_grna, unique_grna, B) {
+  n_nt_cells <- n_cells_per_grna[["non-targeting"]]
+  n_cells_curr_grna_group <- n_cells_per_grna[[unique_grna]]
+  n_cells_curr_de <- n_cells_curr_grna_group + n_nt_cells
+  synthetic_treatment_idxs <- replicate(n = B, expr = sample.int(n = n_cells_curr_de,
+                                                                 size = n_cells_curr_grna_group))
+}
+
+
+compute_empirical_p_value <- function(z_star, z_null, side) {
+  out_p <- switch(side,
+                  "left" = mean(c(-Inf, z_null) <= z_star),
+                  "right" = mean(c(Inf, z_null) > z_star),
+                  "both" = 2 * min(mean(c(-Inf, z_null) <= z_star),
+                                   mean(c(Inf, z_null) > z_star)))
+  return(out_p)
 }

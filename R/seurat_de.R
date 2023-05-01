@@ -24,9 +24,9 @@ seurat_de_workhorse <- function(response_odm, grna_odm, response_grna_group_pair
   res_list <- lapply(X = unique_grna_groups, FUN = function(curr_grna_group) {
     curr_response_grna_group_pairs <- dplyr::filter(response_grna_group_pairs, grna_group == curr_grna_group)
     markers_res <- suppressWarnings(Seurat::FindMarkers(object = seurat_obj[curr_response_grna_group_pairs$response_id,],
-                                       ident.1 = curr_grna_group,
-                                       ident.2 = "non-targeting", only.pos = FALSE,
-                                       logfc.threshold = 0.0, test.use = method, min.pct = 0.0))
+                                    ident.1 = curr_grna_group,
+                                    ident.2 = "non-targeting", only.pos = FALSE,
+                                    logfc.threshold = 0.0, test.use = method, min.pct = 0.0))
 
     if (nrow(markers_res) == 0) {
       ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
