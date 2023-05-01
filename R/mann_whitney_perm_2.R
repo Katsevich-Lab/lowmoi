@@ -67,11 +67,11 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
 
     # empirical p-value
     set.seed(4)
-    z_null_jitter <- z_null + runif(n = B, min = -1e-5, max = 1e-5)
+    z_null_jitter <- z_null + stats::runif(n = B, min = -1e-5, max = 1e-5)
     p_emp <- compute_empirical_p_value(z_star, z_null_jitter, side = "both")
 
     # R's p-value
-    p_r <- wilcox.test(x, y)$p.value
+    p_r <- stats::wilcox.test(x, y)$p.value
 
     # ks statistic for N(0,1) fit
     ks_stat <- stats::ks.test(z_null_jitter, stats::pnorm)$statistic[[1]]
@@ -105,37 +105,4 @@ run_mw_test <- function(x, y) {
   CORRECTION <- sign(z) * 0.5
   z <- (z - CORRECTION)/SIGMA
   return(z[[1]])
-}
-
-
-get_grna_group_info <- function(grna_group_assignments, input_grna_groups) {
-  unique_grnas <- c(input_grna_groups |> stats::setNames(input_grna_groups),
-                    "non-targeting" = "non-targeting")
-  # get the indices of each gRNA
-  grna_specific_idxs <- lapply(unique_grnas, function(unique_grna) {
-    which(grna_group_assignments == unique_grna)
-  })
-  # get the number of cells per gRNA; also record the number of NT cells
-  n_cells_per_grna <- table(grna_group_assignments)[unique_grnas]
-  return(list(grna_specific_idxs = grna_specific_idxs,
-              n_cells_per_grna = n_cells_per_grna))
-}
-
-
-get_grna_permutation_idxs <- function(n_cells_per_grna, unique_grna, B) {
-  n_nt_cells <- n_cells_per_grna[["non-targeting"]]
-  n_cells_curr_grna_group <- n_cells_per_grna[[unique_grna]]
-  n_cells_curr_de <- n_cells_curr_grna_group + n_nt_cells
-  synthetic_treatment_idxs <- replicate(n = B, expr = sample.int(n = n_cells_curr_de,
-                                                                 size = n_cells_curr_grna_group))
-}
-
-
-compute_empirical_p_value <- function(z_star, z_null, side) {
-  out_p <- switch(side,
-                  "left" = mean(c(-Inf, z_null) <= z_star),
-                  "right" = mean(c(Inf, z_null) > z_star),
-                  "both" = 2 * min(mean(c(-Inf, z_null) <= z_star),
-                                   mean(c(Inf, z_null) > z_star)))
-  return(out_p)
 }

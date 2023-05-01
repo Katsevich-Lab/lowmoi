@@ -22,6 +22,8 @@ assignments (logical)}
 \code{grna_group} giving the response ID / grna group pairs to analyze.}
 
 \item{progress}{print progress messages?}
+
+\item{with_covariates}{should the covariates be included in the model?}
 }
 \value{
 a data frame with columns \code{response_id}, \code{grna_group}, and \code{p_value}.
@@ -49,12 +51,12 @@ response_grna_group_pairs <-
 response_odm <- load_dataset_modality("frangieh/control/gene")
 grna_odm <- load_dataset_modality("frangieh/control/grna_assignment")
 response_grna_group_pairs <- data.frame(grna_group = "A2M",
-                                        response_id = sample(ondisc::get_feature_ids(response_odm), 1))
+response_id = sample(ondisc::get_feature_ids(response_odm), 1))
 
 # a papalexi example
 response_odm <- load_dataset_modality("papalexi/eccite_screen/gene")
 grna_odm <- load_dataset_modality("papalexi/eccite_screen/grna_assignment")
 response_grna_group_pairs <- data.frame(grna_group = "CUL3",
-                                        response_id = sample(ondisc::get_feature_ids(response_odm), 4))
+response_id = sample(ondisc::get_feature_ids(response_odm), 4))
 }
 }

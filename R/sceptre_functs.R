@@ -1,6 +1,8 @@
 #' Implements sceptre (v3)
 #'
 #' @inherit abstract_interface
+#' @param with_covariates should the covariates be included in the model?
+#' @param print_progress should progress be printed?
 #'
 #' @export
 sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_covariates = TRUE, print_progress = TRUE) {
@@ -37,6 +39,7 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_cova
 
 
 #' @export
+#' @inherit abstract_interface
 sceptre_no_covariates <- function(response_odm, grna_odm, response_grna_group_pairs) {
   sceptre(response_odm, grna_odm, response_grna_group_pairs, with_covariates = FALSE)
 }

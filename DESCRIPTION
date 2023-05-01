@@ -8,6 +8,7 @@ Description: Unified interface to existing low MOI methods.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
+LinkingTo: Rcpp
 RoxygenNote: 7.2.0
 Imports: 
     dplyr,
@@ -16,7 +17,6 @@ Imports:
     Matrix,
     methods,
     ondisc,
-    readr,
     reticulate,
     sceptre,
     Seurat,
@@ -24,7 +24,11 @@ Imports:
     SummarizedExperiment,
     tibble,
     tidyr,
-    VGAM
+    Rcpp,
+    data.table,
+    forcats,
+    statmod,
+    readr
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

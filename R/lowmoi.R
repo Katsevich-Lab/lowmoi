@@ -2,8 +2,8 @@ utils::globalVariables(c("NTC", "Pr(>Chisq)", "ci.hi", "ci.lo", "ci_high", "ci_l
                          "grna_group", "gene", "response_id", "guide", "logFC", "p_val", "p_value", "primerid", "pvalue",
                          "target_type", "n_nonzero", "n_umis", "dataset", "method", "max_ram", "n_fragments", ".get_config_path", "n_rep",
                          "expressions", "target", "batch", "gem_group", "cell_barcode", "UMI_count", "guide_target", "assigned_grna",
-                         "ntc", "bio_rep", "num_ntcs", "est_size"))
-
+                         "ntc", "bio_rep", "num_ntcs", "est_size", "n_nonzero_cells", "n_treatment", "effective_samp_size", "undercover_grna",
+                         "n_nonzero_treatment", "n_nonzero_control"))
 #' Abstract method interface
 #'
 #' Abstract interface that all methods in the `lowmoi` package must satisfy.
@@ -13,6 +13,9 @@ utils::globalVariables(c("NTC", "Pr(>Chisq)", "ci.hi", "ci.lo", "ci_high", "ci_l
 #' covariate matrix of `grna_odm`. This column should contain entries "non-targeting"
 #' indicating the non-targeting grnas. If `target_type` is present as a column of the
 #' feature covariate matrix of `grna_odm`, `target_type` is ignored.
+#'
+#' @useDynLib lowmoi, .registration = TRUE
+#' @importFrom Rcpp sourceCpp
 #'
 #' @param response_odm an expression ODM of responses (typically genes)
 #' @param grna_odm an ODM of either grna expressions (counts) or grna
@@ -35,12 +38,12 @@ utils::globalVariables(c("NTC", "Pr(>Chisq)", "ci.hi", "ci.lo", "ci_high", "ci_l
 #' response_odm <- load_dataset_modality("frangieh/control/gene")
 #' grna_odm <- load_dataset_modality("frangieh/control/grna_assignment")
 #' response_grna_group_pairs <- data.frame(grna_group = "A2M",
-#'                                         response_id = sample(ondisc::get_feature_ids(response_odm), 1))
+#' response_id = sample(ondisc::get_feature_ids(response_odm), 1))
 #'
 #' # a papalexi example
 #' response_odm <- load_dataset_modality("papalexi/eccite_screen/gene")
 #' grna_odm <- load_dataset_modality("papalexi/eccite_screen/grna_assignment")
 #' response_grna_group_pairs <- data.frame(grna_group = "CUL3",
-#'                                         response_id = sample(ondisc::get_feature_ids(response_odm), 4))
+#' response_id = sample(ondisc::get_feature_ids(response_odm), 4))
 #' }
 NULL

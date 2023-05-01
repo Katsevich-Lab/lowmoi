@@ -48,20 +48,20 @@ process_undercover_result <- function(undercover_res, sample_size_df) {
 #' @export
 process_pc_result <- function(pc_res, sample_size_df) {
   sample_size_df_pc <- sample_size_df |>
-    filter(response_id %in% unique(pc_res$response_id),
+    dplyr::filter(response_id %in% unique(pc_res$response_id),
            dataset %in% unique(pc_res$dataset))
   control_sample_size_df <- sample_size_df |>
-    filter(grna_group == "non-targeting") |>
-    group_by(response_id, dataset) |>
-    summarize(n_control = sum(n_nonzero_cells))
+    dplyr::filter(grna_group == "non-targeting") |>
+    dplyr::group_by(response_id, dataset) |>
+    dplyr::summarize(n_control = sum(n_nonzero_cells))
   to_join <- sample_size_df_pc |>
-    group_by(grna_group, response_id, dataset) |>
-    summarize(n_treatment = sum(n_nonzero_cells)) |>
-    select(response_id, grna_group, n_treatment, dataset)
-  pc_res_w_ss <- left_join(x = pc_res,
+    dplyr::group_by(grna_group, response_id, dataset) |>
+    dplyr::summarize(n_treatment = sum(n_nonzero_cells)) |>
+    dplyr::select(response_id, grna_group, n_treatment, dataset)
+  pc_res_w_ss <- dplyr::left_join(x = pc_res,
                            y = to_join,
                            by = c("grna_group", "response_id", "dataset")) |>
-    left_join(y = control_sample_size_df, by = c("response_id", "dataset")) |>
+    dplyr::left_join(y = control_sample_size_df, by = c("response_id", "dataset")) |>
     replace_slash_w_underscore()
   if ("schraivogel_enhancer_screen_chr8_gene" %in% pc_res_w_ss$dataset &&
       "schraivogel_enhancer_screen_chr11_gene" %in% pc_res_w_ss$dataset) {
@@ -88,7 +88,7 @@ combine_schraivogel_enhancer_screens <- function(undercover_res) {
 
 update_dataset_and_method_names <- function(undercover_res) {
   undercover_res |>
-    mutate(Method = forcats::fct_recode(method,
+    dplyr::mutate(Method = forcats::fct_recode(method,
                                         "SCEPTRE" = "sceptre",
                                         "SCEPTRE (no covariates)" = "sceptre_no_covariates",
                                         "NB regression (w/ covariates)" = "nb_regression_w_covariates",
@@ -109,7 +109,7 @@ update_dataset_and_method_names <- function(undercover_res) {
                                     "KS test",
                                     "MAST",
                                     "MIMOSCA"))) |>
-    mutate(dataset_rename = forcats::fct_recode(dataset,
+    dplyr::mutate(dataset_rename = forcats::fct_recode(dataset,
                                                 "Frangieh (Co Culture)" = "frangieh_co_culture_gene",
                                                 "Frangieh (Control)" = "frangieh_control_gene",
                                                 "Frangieh (IFN-\u03B3)" = "frangieh_ifn_gamma_gene",
