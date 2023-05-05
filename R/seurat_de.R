@@ -27,8 +27,8 @@ seurat_de_workhorse <- function(response_odm, grna_odm, response_grna_group_pair
                                     ident.1 = curr_grna_group,
                                     ident.2 = "non-targeting", only.pos = FALSE,
                                     logfc.threshold = 0.0, test.use = method,
-                                    min.pct = 0.0, min.cells.feature = 1,
-                                    min.cells.group = 1))
+                                    min.pct = 0.0, min.cells.feature = 0,
+                                    min.cells.group = 0))
 
     if (nrow(markers_res) == 0) {
       ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
