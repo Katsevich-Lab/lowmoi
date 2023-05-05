@@ -26,7 +26,9 @@ seurat_de_workhorse <- function(response_odm, grna_odm, response_grna_group_pair
     markers_res <- suppressWarnings(Seurat::FindMarkers(object = seurat_obj[curr_response_grna_group_pairs$response_id,],
                                     ident.1 = curr_grna_group,
                                     ident.2 = "non-targeting", only.pos = FALSE,
-                                    logfc.threshold = 0.0, test.use = method, min.pct = 0.0))
+                                    logfc.threshold = 0.0, test.use = method,
+                                    min.pct = 0.0, min.cells.feature = 1,
+                                    min.cells.group = 1))
 
     if (nrow(markers_res) == 0) {
       ret <- as.data.frame(matrix(nrow = 0, ncol = 3))
