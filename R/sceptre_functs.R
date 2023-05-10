@@ -5,7 +5,10 @@
 #' @param print_progress should progress be printed?
 #'
 #' @export
-sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_covariates = TRUE, print_progress = TRUE) {
+sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_covariates = TRUE, print_progress = TRUE, n_nonzero_trt_thresh = 7L, n_nonzero_cntrl_thresh = 7L) {
+  n_nonzero_trt_thresh <- as.integer(n_nonzero_trt_thresh)
+  n_nonzero_cntrl_thresh <- as.integer(n_nonzero_cntrl_thresh)
+
   # load the gene and grna matrix into memory
   response_matrix <- load_whole_odm(response_odm)
   grna_matrix <- load_whole_odm(grna_odm)
@@ -32,7 +35,9 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_cova
                               formula_object = formula_object,
                               response_grna_group_pairs = response_grna_group_pairs,
                               calibration_check = FALSE,
-                              print_progress = print_progress) |>
+                              print_progress = print_progress,
+                              n_nonzero_trt_thresh = n_nonzero_trt_thresh,
+                              n_nonzero_cntrl_thresh = n_nonzero_cntrl_thresh) |>
     dplyr::select(response_id, grna_group, p_value)
   return(res)
 }

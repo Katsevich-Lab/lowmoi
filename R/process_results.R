@@ -43,26 +43,36 @@ process_undercover_result <- function(undercover_res, sample_size_df) {
 #'
 #' @param pc_res positive control result data frame
 #' @param sample_size_df sample size data frame
+#' @param singleton is this a singleton screen (TRUE) or a grouped screen (FALSE)?
 #'
 #' @return a processed `pc_res`
 #' @export
-process_pc_result <- function(pc_res, sample_size_df) {
+process_pc_result <- function(pc_res, sample_size_df, singleton = FALSE) {
   sample_size_df_pc <- sample_size_df |>
     dplyr::filter(response_id %in% unique(pc_res$response_id),
-           dataset %in% unique(pc_res$dataset))
+                  dataset %in% unique(pc_res$dataset))
   control_sample_size_df <- sample_size_df |>
     dplyr::filter(grna_group == "non-targeting") |>
     dplyr::group_by(response_id, dataset) |>
     dplyr::summarize(n_control = sum(n_nonzero_cells))
-  to_join <- sample_size_df_pc |>
-    dplyr::group_by(grna_group, response_id, dataset) |>
-    dplyr::summarize(n_treatment = sum(n_nonzero_cells)) |>
-    dplyr::select(response_id, grna_group, n_treatment, dataset)
-  pc_res_w_ss <- dplyr::left_join(x = pc_res,
-                           y = to_join,
-                           by = c("grna_group", "response_id", "dataset")) |>
-    dplyr::left_join(y = control_sample_size_df, by = c("response_id", "dataset")) |>
-    replace_slash_w_underscore()
+
+  if (!singleton) {
+    to_join <- sample_size_df_pc |>
+      dplyr::group_by(grna_group, response_id, dataset) |>
+      dplyr::summarize(n_treatment = sum(n_nonzero_cells)) |>
+      dplyr::select(response_id, grna_group, n_treatment, dataset)
+    pc_res_w_ss <- dplyr::left_join(x = pc_res,
+                                    y = to_join,
+                                    by = c("grna_group", "response_id", "dataset")) |>
+      dplyr::left_join(y = control_sample_size_df, by = c("response_id", "dataset"))
+  } else {
+    pc_res_w_ss <- dplyr::left_join(x = pc_res,
+                                    y = sample_size_df_pc |> dplyr::select(response_id, grna_id, n_treatment = n_nonzero_cells, dataset),
+                                    by = c("response_id", "grna_id", "dataset")) |>
+      dplyr::left_join(y = control_sample_size_df,
+                       by = c("response_id", "dataset"))
+  }
+  pc_res_w_ss <- pc_res_w_ss |> replace_slash_w_underscore()
   if ("schraivogel_enhancer_screen_chr8_gene" %in% pc_res_w_ss$dataset &&
       "schraivogel_enhancer_screen_chr11_gene" %in% pc_res_w_ss$dataset) {
     pc_res_w_ss <- pc_res_w_ss |> combine_schraivogel_enhancer_screens()
