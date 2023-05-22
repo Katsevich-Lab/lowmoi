@@ -4,6 +4,8 @@
 #' @inherit abstract_interface
 #' @export
 weissman_method <- function(response_odm, grna_odm, response_grna_group_pairs, use_batch = TRUE) {
+  use_batch <- as.logical(use_batch)
+
   # obtain the cell-to-target assignments
   if (grna_odm@ondisc_matrix@logical_mat) {
     guide_targets <- get_target_assignments_via_max_op(grna_odm)
