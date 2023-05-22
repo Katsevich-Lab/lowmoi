@@ -18,6 +18,7 @@
                                                   path = py_modules_path,
                                                   delay_load = TRUE)
   assign('normalize_to_gemgroup_control', exp_norm_module$normalize_to_gemgroup_control, envir = topenv())
+  assign('normalize_to_control', exp_norm_module$normalize_to_control, envir = topenv())
 
   # Weissman (differential expression)
   diff_exp_module <- reticulate::import_from_path(module = "differential_expression",

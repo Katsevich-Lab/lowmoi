@@ -3,7 +3,7 @@
 #'
 #' @inherit abstract_interface
 #' @export
-weissman_method <- function(response_odm, grna_odm, response_grna_group_pairs) {
+weissman_method <- function(response_odm, grna_odm, response_grna_group_pairs, use_batch = TRUE) {
   # obtain the cell-to-target assignments
   if (grna_odm@ondisc_matrix@logical_mat) {
     guide_targets <- get_target_assignments_via_max_op(grna_odm)
@@ -15,10 +15,13 @@ weissman_method <- function(response_odm, grna_odm, response_grna_group_pairs) {
   cell_pop <- odm_to_cell_pop(response_odm, guide_targets)
 
   # normalize data
-  cell_pop$normalized_matrix <- normalize_to_gemgroup_control(
-    pop = cell_pop,
-    control_cells = 'guide_target == "non-targeting"'
-  )
+  if (use_batch) {
+    cell_pop$normalized_matrix <- normalize_to_gemgroup_control(pop = cell_pop,
+                                                                control_cells = 'guide_target == "non-targeting"')
+  } else {
+    cell_pop$normalized_matrix <- normalize_to_control(pop = cell_pop,
+                                                       control_cells = 'guide_target == "non-targeting"')
+  }
 
   # apply Weissman method
   unique_grna_groups <- as.character(unique(response_grna_group_pairs$grna_group))
@@ -91,8 +94,8 @@ odm_to_cell_pop <- function(response_odm, guide_targets) {
     tibble::rownames_to_column(var = "cell_barcode") |>
     dplyr::mutate(guide_target = guide_targets) # add grna assignments
   # change bio_rep to batch if it is present and batch is not
-  if("bio_rep" %in% names(cells_df)){
-    if(!("batch" %in% names(cells_df))){
+  if ("bio_rep" %in% names(cells_df)) {
+    if (!("batch" %in% names(cells_df))) {
       cells_df <- cells_df |> dplyr::rename(batch = bio_rep)
     } else{
       stop("Uh oh! Both bio_rep and batch are present as cell covariates!")

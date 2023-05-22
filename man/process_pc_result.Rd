@@ -4,12 +4,14 @@
 \alias{process_pc_result}
 \title{Process positive control result}
 \usage{
-process_pc_result(pc_res, sample_size_df)
+process_pc_result(pc_res, sample_size_df, singleton = FALSE)
 }
 \arguments{
 \item{pc_res}{positive control result data frame}
 
 \item{sample_size_df}{sample size data frame}
+
+\item{singleton}{is this a singleton screen (TRUE) or a grouped screen (FALSE)?}
 }
 \value{
 a processed \code{pc_res}

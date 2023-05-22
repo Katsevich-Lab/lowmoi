@@ -9,7 +9,9 @@ sceptre(
   grna_odm,
   response_grna_group_pairs,
   with_covariates = TRUE,
-  print_progress = TRUE
+  print_progress = TRUE,
+  n_nonzero_trt_thresh = 7L,
+  n_nonzero_cntrl_thresh = 7L
 )
 }
 \arguments{
