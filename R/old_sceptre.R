@@ -1129,6 +1129,6 @@ sceptre_orig <- function(response_odm, grna_odm, response_grna_group_pairs) {
                              gene_gRNA_group_pairs = response_grna_group_pairs,
                              parallel = FALSE)
 
-  res <- res |> dplyr::select("grna_group" = "gRNA_id", "response_id" = "gene_id")
+  res <- res |> dplyr::select(grna_group = gRNA_id, response_id = gene_id, p_value)
   return(res)
 }
