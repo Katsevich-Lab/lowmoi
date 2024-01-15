@@ -28,7 +28,7 @@ sceptre <- function(response_odm, grna_odm, response_grna_group_pairs, with_cova
   }
 
   # run sceptre
-  res <- sceptre::run_sceptre_lowmoi(response_matrix = response_matrix,
+  res <- sceptre3::run_sceptre_lowmoi(response_matrix = response_matrix,
                               grna_matrix = grna_matrix,
                               covariate_data_frame = covariate_data_frame,
                               grna_group_data_frame = grna_group_data_frame,
