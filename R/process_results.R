@@ -126,6 +126,7 @@ update_dataset_and_method_names <- function(undercover_res) {
                                                 "Papalexi (Gene)" = "papalexi_eccite_screen_gene",
                                                 "Papalexi (Protein)" = "papalexi_eccite_screen_protein",
                                                 "Schraivogel" = "schraivogel_enhancer_screen",
-                                                "Simulated" = "simulated_experiment_1_gene"
+                                                "Simulated" = "simulated_experiment_1_gene",
+                                                "Simulated" = "simulated_experiment_2_gene"
     ))
   }
