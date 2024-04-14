@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 low_level_score_test_vectorized <- function(a, B, w, index_mat) {
-    .Call('_lowmoi_low_level_score_test_vectorized', PACKAGE = 'lowmoi', a, B, w, index_mat)
+    .Call(`_lowmoi_low_level_score_test_vectorized`, a, B, w, index_mat)
 }
 
 low_level_permutation_test <- function(y, index_mat) {
-    .Call('_lowmoi_low_level_permutation_test', PACKAGE = 'lowmoi', y, index_mat)
+    .Call(`_lowmoi_low_level_permutation_test`, y, index_mat)
 }
 

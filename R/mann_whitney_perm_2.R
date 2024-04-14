@@ -27,14 +27,14 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
   # obtain the random indexes
   unique_grna_groups <- as.character(unique(response_grna_group_pairs$grna_group))
   grna_targets <- get_target_assignments_via_max_op(grna_odm)
-  grna_group_info <- get_grna_group_info(grna_group_assignments = grna_targets,
-                                         input_grna_groups = unique_grna_groups)
+  grna_group_info <- sceptre2:::get_grna_group_info(grna_group_assignments = grna_targets,
+                                                    input_grna_groups = unique_grna_groups)
   random_idxs <- lapply(X = unique_grna_groups, function(unique_grna_group) {
    cbind(matrix(data = seq(1, grna_group_info$n_cells_per_grna[[unique_grna_group]]),
                 ncol = 1),
-    get_grna_permutation_idxs(n_cells_per_grna = grna_group_info$n_cells_per_grna,
-                              unique_grna = unique_grna_group,
-                              B = B))
+         sceptre2:::get_grna_permutation_idxs(n_cells_per_grna = grna_group_info$n_cells_per_grna,
+                                              unique_grna = unique_grna_group,
+                                              B = B))
   }) |> stats::setNames(unique_grna_groups)
 
   # define the permutation test function
@@ -68,7 +68,7 @@ mann_whitney_perm <- function(response_odm, grna_odm, response_grna_group_pairs,
     # empirical p-value
     set.seed(4)
     z_null_jitter <- z_null + stats::runif(n = B, min = -1e-5, max = 1e-5)
-    p_emp <- compute_empirical_p_value(z_star, z_null_jitter, side = "both")
+    p_emp <- sceptre2:::compute_empirical_p_value(z_star, z_null_jitter, side = "both")
 
     # R's p-value
     p_r <- stats::wilcox.test(x, y)$p.value
